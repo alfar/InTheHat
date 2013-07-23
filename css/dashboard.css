@@ -1,0 +1,38 @@
+article {
+	background-color: #eee;
+	border: solid 1px #00B2A8;
+	border-radius: 5px;
+	margin: 4px;
+	padding: 4px;
+	clear: both;
+}
+.author {
+	display: inline-block;
+	height: 50px;
+	margin: 2px;
+	padding: 4px;
+	vertical-align: top;
+}
+.author img {
+	vertical-align: middle;
+	margin-right: 2px;
+}
+
+#rides ul {
+	list-style: none;
+	margin: 0px;
+	padding: 0px;
+}
+#rides article {	
+	height: 60px;
+}
+.author {
+	float: right;
+}
+h1 {
+	margin: 0px 0px 10px 0px;
+}
+.frame {
+	overflow: auto;
+	border: solid 1px #00B2A8;
+}
