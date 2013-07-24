@@ -4,13 +4,19 @@ class Language_model extends CI_Model {
 		$this->load->database();
 	}
 	
-	public function get($q = FALSE, $create_new = TRUE)
+	public function get($q = FALSE, $create_new = TRUE, $limit = FALSE, $start = FALSE)
 	{
 		if ($q != FALSE)
 		{
 			$this->db->like('name', $q, 'after');
 		}
-		$this->db->select('name');
+		
+		if ($limit != FALSE)
+		{
+			$this->db->limit($limit, $start);
+		}
+		
+		$this->db->select('id, name');
 		$this->db->order_by('name');
 		$query = $this->db->get('language');
 		if ($query->num_rows() > 0)
@@ -20,7 +26,7 @@ class Language_model extends CI_Model {
 		else
 		{
 			if ($create_new === TRUE) {
-				return array(array('name' => $q));
+				return array(array('id' => 0, 'name' => $q));
 			}
 			else
 			{

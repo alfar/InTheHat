@@ -4,10 +4,14 @@ class Ride_model extends MY_Model {
 		$this->load->database();
 	}
 	
-	public function get($limit = FALSE, $start = 0)
+	public function get($limit = FALSE, $start = 0, $language = FALSE)
 	{
+		if ($language !== FALSE)
+		{
+			$this->db->where('language', $language);
+		}
 		$this->db->order_by('id', 'desc');
-		$this->db->select('ride.id, ride.name, language.id AS languageId, language.name AS language, ride.author, user.name AS userName, user.image as userImage');
+		$this->db->select('ride.id, ride.name, language.id AS language_id, language.name AS language, ride.author, user.name AS userName, user.image as userImage');
 		$this->db->join('user', 'user.id = ride.author');
 		$this->db->join('language', 'language.id = ride.language');
 		if ($limit != FALSE)
@@ -21,7 +25,7 @@ class Ride_model extends MY_Model {
 	public function get_latest()
 	{
 		$this->db->order_by('id', 'desc');
-		$this->db->select('ride.id, ride.name, language.id as languageId, language.name AS language, ride.author, user.name AS userName, user.image as userImage');
+		$this->db->select('ride.id, ride.name, language.id as language_id, language.name AS language, ride.author, user.name AS userName, user.image as userImage');
 		$this->db->join('user', 'user.id = ride.author');
 		$this->db->join('language', 'language.id = ride.language');
 		$this->db->limit(1, 0);
@@ -61,7 +65,7 @@ class Ride_model extends MY_Model {
 	
 	public function get_ride($id)
 	{
-		$this->db->select('ride.id, ride.name, ride.description, language.id AS languageId, language.name AS language, ride.author, user.name AS ownerName, user.image as ownerImage');
+		$this->db->select('ride.id, ride.name, ride.description, language.id AS language_id, language.name AS language, ride.author, user.name AS ownerName, user.image as ownerImage');
 		$this->db->join('user', 'user.id = ride.author');
 		$this->db->join('language', 'language.id = ride.language');
 		$query = $this->db->get_where('ride', array('ride.id' => $id));
@@ -114,7 +118,7 @@ class Ride_model extends MY_Model {
 	
 	public function get_paths()
 	{
-		$this->db->select('path.id, path.name, path.owner, user.name as ownerName, user.image as ownerImage, language.name as language');
+		$this->db->select('path.id, path.name, path.owner, user.name as ownerName, user.image as ownerImage, language.id as language_id, language.name as language');
 		$this->db->order_by('path.id', 'desc');
 		$this->db->join('language', 'language.id = path.language');
 		$this->db->join('user', 'user.id = path.owner');

@@ -107,7 +107,7 @@ function register_select2()
 	return '';
 }
 
-function language_select2($id, $value, $class = 'input-block-level', $settings = NULL)
+function language_select2($id, $value, $class = 'input-block-level', $allow_create = TRUE, $settings = NULL)
 {
 	if ($settings === NULL)
 	{
@@ -115,7 +115,19 @@ function language_select2($id, $value, $class = 'input-block-level', $settings =
 	}
 	$settings['ajax'] = array('url' => site_url('languages/flexbox'));
 		
-	$result = register_select2() . '<input type="hidden" name="' . $id . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" /><script type="text/javascript">$(function() { var cfg = ' . json_encode($settings) . '; cfg.ajax.data = function(term, page) { return { "q": term }; }; cfg.ajax.results = function(data, page) { return {"results" : $.map(data.results, function(itm) { return {"id": itm.name, "text" : itm.name}; }) };}; cfg.formatResult = function(object, container, query) { return (object["new"] !== undefined ? "<small class=\"muted\">New language: </small>" : "") + object.text; }; cfg.createSearchChoice = function(term) { return {\'id\': term, \'new\': true, \'text\': term }; }; cfg.placeholder = \'Pick a language\'; cfg.initSelection = function(element, callback) {callback({\'id\' : element.val(), \'text\' : element.val()})}; $(\'#' . $id . '\').select2(cfg); });</script>';
+	$result = register_select2() . '<input type="hidden" name="' . $id . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" /><script type="text/javascript">$(function() { var cfg = ' . json_encode($settings) . '; cfg.ajax.data = function(term, page) { return { "q": term, "p": page }; }; cfg.ajax.results = function(data, page) { return {"more" : data.more, "results" : $.map(data.results, function(itm) { return {"id": itm.name, "text" : itm.name}; }) };}; cfg.formatResult = function(object, container, query) { return (object["new"] !== undefined ? "<small class=\"muted\">New language: </small>" : "") + object.text; }; ' . ($allow_create ? 'cfg.createSearchChoice = function(term) { return {\'id\': term, \'new\': true, \'text\': term }; }; ' : '') . 'cfg.placeholder = \'Pick a language\'; cfg.initSelection = function(element, callback) {callback({\'id\' : element.val(), \'text\' : element.val()})}; $(\'#' . $id . '\').select2(cfg); });</script>';
+	return $result;
+}
+
+function language_id_select2($id, $value, $class = 'input-block-level', $allow_create = TRUE, $settings = NULL)
+{
+	if ($settings === NULL)
+	{
+		$settings = array();
+	}
+	$settings['ajax'] = array('url' => site_url('languages/flexbox'));
+		
+	$result = register_select2() . '<input type="hidden" name="' . $id . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" /><script type="text/javascript">$(function() { var cfg = ' . json_encode($settings) . '; cfg.ajax.data = function(term, page) { return { "q": term, "p": page }; }; cfg.ajax.results = function(data, page) { return {"more" : data.more, "results" : $.map(data.results, function(itm) { return {"id": itm.id, "text" : itm.name}; }) };}; cfg.formatResult = function(object, container, query) { return (object["new"] !== undefined ? "<small class=\"muted\">New language: </small>" : "") + object.text; }; ' . ($allow_create ? 'cfg.createSearchChoice = function(term) { return {\'id\': 0, \'new\': true, \'text\': term }; }; ' : '') . 'cfg.placeholder = \'Pick a language\'; cfg.initSelection = function(element, callback) {callback({\'id\' : -1, \'text\' : element.val()})}; $(\'#' . $id . '\').select2(cfg); });</script>';
 	return $result;
 }
 

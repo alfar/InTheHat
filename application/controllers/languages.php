@@ -19,8 +19,10 @@ class Languages extends MY_Controller
 	public function flexbox()
 	{
 		$query = $this->input->get('q', TRUE);
+		$page = $this->input->get('p', TRUE);
+		$result = $this->language_model->get($query, FALSE, 10, ($page - 1) * 10);
 		
-		$this->output->set_content_type('application/json')->set_output(json_encode(array('results' => $this->language_model->get($query, FALSE))));
+		$this->output->set_content_type('application/json')->set_output(json_encode(array('more' => count($result) == 10, 'results' => $result)));
 	}
 
 	public function magicsuggest()

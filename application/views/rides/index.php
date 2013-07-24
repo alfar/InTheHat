@@ -1,3 +1,4 @@
+<div class="control-group clearfix"><label for="language" class="control-label">Language:</label><div class="controls"><?= language_id_select2('language', $current_language, 'span4', FALSE) ?></div></div>
 <div id="ride_list" class="container"></div>
 
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery.simple-infinite-scroll.min.js"></script>
@@ -7,7 +8,7 @@
 		<p class="text-center"><small><a href="<?= site_url('/users/profile/{author}'); ?>">{userName}</a></small></p>
 	</div>
 	<p class="lead"><a href="<?= site_url('/rides/show/{id}') ?>">{name}</a></p>
-	<p><?= anchor('/languages/show/{languageId}', '{language}', 'class="badge badge-info"') ?></p>
+	<p><?= anchor('/languages/show/{language_id}', '{language}', 'class="badge badge-info"') ?></p>
 </script>
 <script type="text/javascript">	
 	var ride_next_page = 0;
@@ -37,6 +38,17 @@
 	$(function() {		
 		var rides = <?= $rides ?>;
 		populateRides(rides);
+		
+		$('#language').on('change', function(e) {
+			if ($(this).val() == 0)
+			{
+				location.href = '<?= site_url('rides') ?>';
+			}
+			else
+			{
+				location.href = '<?= site_url('rides/index') ?>/' + $(this).val();
+			}
+		});
 	
 		$(window).simpleInfiniteScroll({
 			offset: 10,

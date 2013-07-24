@@ -5,8 +5,8 @@
 	</div>
 	<div class="span3">
 		<div class="well">
-			<p class="muted">Author: <?= $ride['ownerName'] ?></p>
-			<p><?= anchor('/languages/show/' . $ride['languageId'], $ride['language'], 'class="badge badge-info"') ?></p>
+			<p class="muted">By: <?= anchor('users/profile/' . $ride['author'], $ride['ownerName']) ?></p>
+			<p><?= anchor('/languages/show/' . $ride['language_id'], $ride['language'], 'class="badge badge-info"') ?></p>
 		</div>
 	</div>				
 </div>

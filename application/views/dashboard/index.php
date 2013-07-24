@@ -22,7 +22,7 @@
 				<p class="text-center"><small><a href="<?= site_url('/users/profile/' . $ride['author'] ); ?>"><?=$ride['userName']?></a></small></p>
 			</div>
 			<p class="lead"><a href="<?= site_url('/rides/show/' . $ride['id']) ?>"><?=$ride['name'] ?></a></p>
-			<p><?= anchor('/languages/show/' . $ride['languageId'], $ride['language'], 'class="badge badge-info"') ?></p>
+			<p><?= anchor('/languages/show/' . $ride['language_id'], $ride['language'], 'class="badge badge-info"') ?></p>
 		</div>
 	</div>
 	<div class="span4">

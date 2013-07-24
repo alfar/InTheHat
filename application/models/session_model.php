@@ -14,8 +14,7 @@ class Session_model extends MY_Model {
 			'owner' => $owner
 		);
 		
-		$this->db->insert('session_table', $data);		
-		
+		$this->db->insert('session_table', $data);				
 		return $this->db->insert_id();
 	}
 
@@ -24,7 +23,8 @@ class Session_model extends MY_Model {
 		$this->db->order_by('session_table.id', 'desc');
 		$this->db->limit($limit, $start);
 		$this->db->join('user', 'user.id = session_table.owner');
-		$this->db->select('session_table.*, user.id as ownerId, user.name as ownerName, user.image as ownerImage');
+		$this->db->join('language', 'language.id = session_table.language');
+		$this->db->select('session_table.*, language.id as language_id, language.name as language, user.id as ownerId, user.name as ownerName, user.image as ownerImage');
 		$query = $this->db->get('session_table');
 		return $query->result_array();
 	}

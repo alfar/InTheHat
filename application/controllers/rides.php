@@ -8,11 +8,24 @@ class Rides extends MY_Controller
 		$this->view_data['nav'] = 'rides';
 	}
 	
-	public function index() 
+	public function index($language = FALSE) 
 	{
-		$this->view_data['rides'] = json_encode($this->ride_model->get(10, 0));
+		if ($language !== FALSE)
+		{
+			$this->load->model('language_model');
+			$lang = $this->language_model->get_language($language);
+			$this->view_data['current_language'] = $lang['name'];
+		}
+		else
+		{
+			$this->view_data['current_language'] = 'All languages';
+		}
 		
+		$this->view_data['rides'] = json_encode($this->ride_model->get(10, 0, $language));
+		
+		$this->view_data['css'] = array('css/select2.css');
 		$this->view_data['title'] = 'Rides';
+		$this->load->helper('tiny_mce_helper');
 
 		if ($this->logged_in())
 		{
