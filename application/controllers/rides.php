@@ -59,7 +59,15 @@ class Rides extends MY_Controller
 		if ($this->view_data['userid'] == $ride['author'])
 		{
 			$this->view_data['submenu'] = array(
-				'rides/edit/' . $ride['id'] . ($path !== FALSE ? '/' . $path : '') => 'Edit ride'
+				'rides/edit/' . $ride['id'] . ($path !== FALSE ? '/' . $path : '') => 'Edit ride',
+				'rides/signoffs/' . $ride['id'] => 'View sign offs',
+				'rides/signoff/' . $ride['id'] => 'Sign off'
+			);
+		}
+		else
+		{
+			$this->view_data['submenu'] = array(
+				'rides/signoffs/' . $ride['id'] => 'View sign offs'
 			);
 		}
 				
@@ -125,5 +133,53 @@ class Rides extends MY_Controller
 			$this->ride_model->update_ride($id, $this->input->post('name'), $this->input->post('description'), $this->input->post('language'), $this->session->userdata('id'));
 			redirect('/rides/show/' . $id . ($path !== FALSE ? '/' . $path : ''));
 		}		
+	}
+	
+	public function signoff($id)
+	{
+		$this->requires_login();
+	
+		$this->view_data['css'] = array('css/select2.css');
+
+		$this->load->helper('form');
+		$this->load->helper('tiny_mce');
+		$this->load->library('form_validation');
+
+		$this->view_data['title'] = 'Sign off';
+		$ride = $this->ride_model->get_ride($id);
+
+		if ($this->view_data['userid'] == $ride['author'])
+		{
+			$this->view_data['ride'] = $ride;
+
+			$this->form_validation->set_rules('user', 'User', 'required');
+			$this->form_validation->set_rules('score', 'Score', 'required');
+			$this->form_validation->set_rules('comment', 'Comment', 'required');
+			
+			if ($this->form_validation->run() === FALSE)
+			{
+				$this->show_view('rides/signoff');	
+			}
+			else
+			{
+				$this->ride_model->signoff($id, $this->input->post('user', TRUE), $this->view_data['userid'], $this->input->post('score', TRUE), $this->input->post('comment', TRUE));
+				redirect('/rides/signoffs/' . $id);
+			}		
+		}
+		else
+		{
+			redirect('/rides/signoffs/' . $id);
+		}
+	}
+	
+	public function signoffs($id)
+	{
+		$this->view_data['submenu'] = array(
+			'rides/show/' . $id => 'View ride',
+		);
+		$this->view_data['ride'] = $this->ride_model->get_ride($id);
+		$this->view_data['signoffs'] = $this->ride_model->get_signoffs($id);
+		$this->view_data['levels'] = array('Low', 'Medium', 'High');
+		$this->show_view('rides/signoffs');	
 	}
 }

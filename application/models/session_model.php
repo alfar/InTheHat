@@ -32,7 +32,8 @@ class Session_model extends MY_Model {
 	public function get_table($id)
 	{
 		$this->db->join('user', 'user.id = session_table.owner');
-		$this->db->select('session_table.*, user.id as ownerId, user.name as ownerName, user.image as ownerImage');
+		$this->db->join('image', 'image.id = session_table.image', 'left');
+		$this->db->select('session_table.*, user.id as ownerId, user.name as ownerName, user.image as ownerImage, image.path as background');
 		$query = $this->db->get_where('session_table', array('session_table.id' => $id));
 		return $query->row_array();
 	}
@@ -191,5 +192,18 @@ class Session_model extends MY_Model {
 		$this->db->where('id', $id);
 		$this->db->update('session_object', $data);
 
+	}
+	
+	public function set_background($id, $image)
+	{
+		$this->db->query('insert into session_log (tableId, action, imageId) values (?, 8, ?)', array($id, $image));
+
+		$data = array(
+			'image' => $image
+		);
+		
+		$this->db->where('id', $id);
+		
+		$this->db->update('session_table', $data);		
 	}
 }

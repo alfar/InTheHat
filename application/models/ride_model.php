@@ -277,4 +277,42 @@ class Ride_model extends MY_Model {
 		
 		$this->db->insert('path_ride', $data);
 	}
+	
+	public function signoff($ride, $user, $signee, $score, $comment)
+	{
+		$data = array(
+			'ride' => $ride,
+			'user' => $user,
+			'signee' => $signee
+		);
+		
+		if ($this->db->where($data)->count_all_results('user_ride') > 0)
+		{
+			$this->db->where($data);
+			$update = array(
+				'score' => $score,
+				'comment' => $comment
+			);
+			
+			$this->db->update('user_ride', $update);
+		}
+		else
+		{
+			$data['score'] = $score;
+			$data['comment'] = $comment;
+			$this->db->insert('user_ride', $data);
+		}
+	}
+	
+	public function get_signoffs($ride)
+	{
+		$this->db->order_by('user.name, signee.name', 'ASC');
+		$this->db->where('ride', $ride);
+		$this->db->join('user', 'user.id = user_ride.user');
+		$this->db->join('user signee', 'signee.id = user_ride.signee');		
+		$this->db->select('user.id as user_id, user.name as user_name, signee.id as signee_id, signee.name as signee_name, user_ride.score, user_ride.comment');
+		$query = $this->db->get('user_ride');
+		
+		return $query->result_array();
+	}
 }

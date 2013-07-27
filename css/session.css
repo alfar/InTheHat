@@ -19,4 +19,6 @@
 #area {
 }
 #table {
+	background-repeat: no-repeat;
+	background-position: center center;
 }

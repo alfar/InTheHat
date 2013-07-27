@@ -131,6 +131,18 @@ function language_id_select2($id, $value, $class = 'input-block-level', $allow_c
 	return $result;
 }
 
+function user_select2($id, $value, $class = 'input-block-level', $allow_create = TRUE, $settings = NULL)
+{
+	if ($settings === NULL)
+	{
+		$settings = array();
+	}
+	$settings['ajax'] = array('url' => site_url('users/select'));
+		
+	$result = register_select2() . '<input type="hidden" name="' . $id . '" id="' . $id . '" class="' . $class . '" value="' . $value . '" /><script type="text/javascript">$(function() { var cfg = ' . json_encode($settings) . '; cfg.ajax.data = function(term, page) { return { "q": term, "p": page }; }; cfg.ajax.results = function(data, page) { return {"more" : data.more, "results" : $.map(data.results, function(itm) { return {"id": itm.id, "text" : itm.name}; }) };}; cfg.placeholder = \'Pick a user\'; $(\'#' . $id . '\').select2(cfg); });</script>';
+	return $result;
+}
+
 function language_levels()
 {
 	static $data = array(

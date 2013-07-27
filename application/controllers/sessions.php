@@ -146,6 +146,15 @@ class Sessions extends MY_Controller
 		
 		$this->output->set_content_type('application/json')->set_output(json_encode($result));					
 	}
+
+	public function set_background()
+	{
+		$table = $this->input->post('table', TRUE);
+		$image = $this->input->post('image', TRUE);		
+		
+		$this->session_model->set_background($table, $image);
+		$this->output->set_content_type('application/json')->set_output('true');					
+	}
 	
 	public function create()
 	{

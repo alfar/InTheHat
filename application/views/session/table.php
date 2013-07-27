@@ -35,7 +35,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="span10" id="table" style="height: 400px;">
+		<div class="span10" id="table" style="height: 400px;<?= $table['background'] !== NULL ? 'background-image: url(' . base_url() .'images/' . $table['background'] . ')' : '' ?>">
 		</div>
 		<div class="span1 seat vertical" id="seat3">
 			<div style="position: relative; top: 50%;">
@@ -47,7 +47,9 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="span1"></div>
+		<div class="span1" id="backslide" style="line-height: 60px; text-align: center;">
+			<i class="icon-picture"></i>
+		</div>		
 		<div class="seat horizontal span10" id="seat4">
 			<ul class="inline">
 			</ul>
@@ -128,7 +130,7 @@
 						$ul.append('<li id="folder' + data['folders'][f]['id'] + '" class="folder">' + data['folders'][f]['name'] + '</li>');
 					}					
 					for (var i = 0; i < data['images'].length; i++) {
-						$ul.append('<li id="image' + data['images'][i]['id'] + '" class="item"><img src="<?= base_url() ?>images/' + data['images'][i]['path'] + '" height="50" class="img-polaroid" /></li>');
+						$ul.append('<li id="image' + data['images'][i]['id'] + '" class="item"><img src="<?= base_url() ?>images/' + data['images'][i]['path'] + '" style="max-height: 50px; width: auto;" class="img-polaroid" /></li>');
 					}					
 					$('#bag li.item').drags({ 'within': '#area' });
 					$ul.fadeIn();
@@ -139,13 +141,26 @@
 		});
 		$('#bag li.item').drags({ 'within': '#area' });
 		$('#bag').on('dropped', 'li.item', function (e) {
-			$.ajax({
-				url: '<?= site_url('/sessions/create_object') ?>',
-				method: 'POST',
-				dataType: 'json',
-				async: true,
-				data: {'table': <?= $table['id'] ?>, 'image': e.target.id.substr(5), 'x': $(e.target).offset().left, 'y': ($(e.target).offset().top)},
-			});
+			if (($(e.target).offset().left < $('#backslide').offset().left + $('#backslide').outerWidth()) && (($(e.target).offset().top + $(e.target).outerHeight()) > $('#backslide').offset().top)) 
+			{
+				$.ajax({
+					url: '<?= site_url('/sessions/set_background') ?>',
+					method: 'POST',
+					dataType: 'json',
+					async: true,
+					data: {'table': <?= $table['id'] ?>, 'image': e.target.id.substr(5)},
+				});				
+			}
+			else
+			{
+				$.ajax({
+					url: '<?= site_url('/sessions/create_object') ?>',
+					method: 'POST',
+					dataType: 'json',
+					async: true,
+					data: {'table': <?= $table['id'] ?>, 'image': e.target.id.substr(5), 'x': $(e.target).offset().left, 'y': ($(e.target).offset().top)},
+				});
+			}
 			$(e.target).fadeOut(function() {
 				e.target.style.position = '';
 				e.target.style.top = '';
@@ -156,17 +171,7 @@
 		$(document).on('dropped', '.object', function (e) {			
 			var id = e.target.id.substr(3);
 						
-			if ((($(e.target).offset().left + $(e.target).outerWidth() / 2) > $('#trash').offset().left + $('#trash').outerWidth()) || (($(e.target).offset().top + $(e.target).outerHeight() / 2) > $('#trash').offset().top + $('#trash').outerHeight())) 
-			{
-				$.ajax({
-					url: '<?= site_url('/sessions/move_object') ?>',
-					method: 'POST',
-					dataType: 'json',
-					async: true,
-					data: {'id': id, 'x': $(e.target).offset().left, 'y': ($(e.target).offset().top)},
-				});
-			}
-			else 
+			if (($(e.target).offset().left < $('#trash').offset().left + $('#trash').outerWidth()) && ($(e.target).offset().top < $('#trash').offset().top + $('#trash').outerHeight())) 
 			{
 				$.ajax({
 					url: '<?= site_url('/sessions/destroy_object') ?>',
@@ -175,6 +180,16 @@
 					async: true,
 					data: {'id': id},
 				});				
+			}
+			else 
+			{
+				$.ajax({
+					url: '<?= site_url('/sessions/move_object') ?>',
+					method: 'POST',
+					dataType: 'json',
+					async: true,
+					data: {'id': id, 'x': $(e.target).offset().left, 'y': ($(e.target).offset().top)},
+				});
 			}
 						
 			e.stopPropagation();
@@ -242,6 +257,10 @@
         		case '7':
         			// player sat
         			$('#player' + action['objectId']).fadeOut(function () {$(this).appendTo('#seat' + action['toX'] + ' ul').fadeIn('bounce')});
+        			break;
+        		case '8':
+        			// new background
+        			$('#table').css('background-image', 'url(<?= base_url() ?>images/' + action['path'] + ')');
         			break;
         	}
         }

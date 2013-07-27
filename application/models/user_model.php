@@ -10,6 +10,24 @@ class User_model extends MY_Model {
 		$query = $this->db->get('user');
 		return $query->result_array();
 	}
+
+	public function select($query = FALSE, $limit = FALSE, $start = FALSE)
+	{
+		if ($query != FALSE)
+		{
+			$this->db->like('name', $query, 'after');
+		}
+		
+		if ($limit != FALSE)
+		{
+			$this->db->limit($limit, $start);
+		}
+		
+		$this->db->select('id, name');
+		$this->db->order_by('name', 'asc');
+		$query = $this->db->get('user');
+		return $query->result_array();
+	}
 	
 	public function get_random()
 	{

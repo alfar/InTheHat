@@ -13,6 +13,15 @@ class Users extends MY_Controller
 	{
 		$this->output->set_content_type('application/json')->set_output(json_encode($this->user_model->get()));					
 	}
+
+	public function select()
+	{
+		$query = $this->input->get('q', TRUE);
+		$page = $this->input->get('p', TRUE);
+		$result = $this->user_model->select($query, 10, ($page - 1) * 10);
+
+		$this->output->set_content_type('application/json')->set_output(json_encode(array('more' => count($result) == 10, 'results' => $result)));
+	}
 	
 	public function profile($id)
 	{
