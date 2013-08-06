@@ -94,11 +94,17 @@ class Ride_model extends MY_Model {
 		);
 		
 		$this->db->insert('ride', $data);
-		return $this->db->insert_id();
+		$id = $this->db->insert_id();
+		
+		$this->feed($this->user_link($author) . ' created a ride called ' . anchor('/rides/show/' . $id, $name));
+		
+		return $id;		
 	}
 
 	public function update_ride($id, $name, $description, $language, $author)
 	{
+		$this->feed($this->user_link($author) . ' updated a ride called ' . anchor('/rides/show/' . $id, $name));
+
 		$languageId = $this->get_language_id($language);			
 				
 		$data = array(
@@ -121,9 +127,13 @@ class Ride_model extends MY_Model {
 			'language' => $languageId,
 			'owner' => $owner
 		);
-		
+
 		$this->db->insert('path', $data);
-		return $this->db->insert_id();		
+		$id = $this->db->insert_id();		
+		
+		$this->feed($this->user_link($owner) . ' created a path called ' . anchor('/paths/show/' . $id, $name));
+
+		return $id;		
 	}
 	
 	public function get_paths()
@@ -324,6 +334,8 @@ class Ride_model extends MY_Model {
 			$data['comment'] = $comment;
 			$this->db->insert('user_ride', $data);
 		}
+
+		$this->feed($this->user_link($signee) . ' signed off on a ' . anchor('/rides/show/' . $ride, 'ride') . ' for ' . $this->user_link($user));		
 	}
 	
 	public function get_signoffs($ride)

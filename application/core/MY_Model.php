@@ -32,4 +32,22 @@ class MY_Model extends CI_Model {
 		return $languageId;
 	}
 	
+	public function user_link($id)
+	{
+		$this->db->where('id', $id);
+		$query = $this->db->get('user');
+		
+		$user = $query->row_array();
+		
+		return anchor('/users/profile/' . $user['id'], $user['name']);
+	}
+	
+	public function feed($action)
+	{
+		$data = array(
+			'action' => $action
+		);
+		
+		$this->db->insert('feed', $data);
+	}	
 }

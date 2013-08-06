@@ -1,5 +1,5 @@
 <?php
-class Blog_model extends CI_Model {
+class Blog_model extends MY_Model {
 	public function __construct() {
 		$this->load->database();
 	}
@@ -45,8 +45,6 @@ class Blog_model extends CI_Model {
 	
 	public function create_blog($title, $text, $author)
 	{
-		$this->load->helper('url');
-		
 		$slug = url_title($title, 'dash', TRUE);
 		
 		$data = array(
@@ -56,6 +54,12 @@ class Blog_model extends CI_Model {
 			'author' => $author
 		);
 		
-		return $this->db->insert('blog', $data);
+		$this->db->insert('blog', $data);
+		
+		$id = $this->db->insert_id();
+		
+		$this->feed($this->user_link($author) . ' created a blog entry titled ' . anchor('/blogs/view/' . $id, $title));
+		
+		return $id;
 	}
 }

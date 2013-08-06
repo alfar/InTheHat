@@ -1,5 +1,5 @@
 <?php
-class Kaizen_model extends CI_Model {
+class Kaizen_model extends MY_Model {
 	public function __construct() {
 		$this->load->database();
 	}
@@ -38,6 +38,8 @@ class Kaizen_model extends CI_Model {
 			'author' => $author,
 			'state' => 0
 		);
+				
+		$this->feed($this->user_link($author) . ' wrote a ' . anchor('/rides/kaizen/' . $ride, 'kaizen entry'));
 		
 		return $this->db->insert('kaizen', $data);
 	}
