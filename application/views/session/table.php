@@ -1,5 +1,6 @@
 <h1><?= $table['name'] ?></h1>
 
+<?php if ($mode != 'guest'): ?>
 <div class="btn-group">
 	<button id="bag-toggle" class="pull-right btn dropdown-toggle" data-toggle="dropdown">Bag <span class="caret"></span>
 	</button>
@@ -9,17 +10,20 @@
 				<ul id="path" class="breadcrumb"><li><a href="#" id="path0">Items</a> <span class="divider">/</span></li></ul>
 				<ul id="content0" class="thumbnails">
 					<?php foreach ($image_folders as $folder): ?>
-					<li class="folder" id="folder<?= $folder['id'] ?>"><?= $folder['name'] ?></li>
+					<li class="folder" id="folder<?= $folder['id'] ?>"><a data-target="#" class="img-polaroid"><i class="icon-folder-close"></i> <?= $folder['name'] ?></a></li>
 					<?php endforeach; ?>	
 				</ul>		
 			</div>
 		</li>
 	</ul>		
 </div>
+<?php endif; ?>
 <div id="area">
 	<div class="row">
 		<div class="span1" id="trash" style="line-height: 60px; text-align: center;">
+<?php if ($mode != 'guest'): ?>
 			<i class="icon-trash"></i>
+<?php endif; ?>
 		</div>		
 		<div class="seat horizontal span10" id="seat1">
 			<ul class="inline">
@@ -48,7 +52,9 @@
 	</div>
 	<div class="row">
 		<div class="span1" id="backslide" style="line-height: 60px; text-align: center;">
+<?php if ($mode != 'guest'): ?>
 			<i class="icon-picture"></i>
+<?php endif; ?>
 		</div>		
 		<div class="seat horizontal span10" id="seat4">
 			<ul class="inline">
@@ -68,9 +74,11 @@
 		</ul>
 	</div>
 </div>
+<div id="objects" style="position: relative;">
 <?php foreach ($objects as $obj): ?>
 	<div id="obj<?= $obj['id'] ?>" class="object" style="left: <?= $obj['x'] ?>px; top: <?= $obj['y'] ?>px;"><img src="<?= base_url() ?>images/<?= $obj['path'] ?>" /></div>
 <?php endforeach; ?>
+</div>
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery.drags.js"></script>
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery-ui-1.10.3.effects.min.js"></script>
 <script type="text/javascript">
@@ -79,10 +87,10 @@
 	var bag_stack = [];
 	
 	$(function() {
-		$('.seat1').appendTo($('#seat1'));
-		$('.seat2').appendTo($('#seat2'));
-		$('.seat3').appendTo($('#seat3'));
-		$('.seat4').appendTo($('#seat4'));		
+		$('.seat1').appendTo($('#seat1 ul'));
+		$('.seat2').appendTo($('#seat2 ul'));
+		$('.seat3').appendTo($('#seat3 ul'));
+		$('.seat4').appendTo($('#seat4 ul'));		
 	<?php if ($mode != 'guest'): ?>
 		$('.seat').on('click', function (e) {
 			$.ajax({
@@ -127,7 +135,7 @@
 					}
 
 					for (var f = 0; f < data['folders'].length; f++) {
-						$ul.append('<li id="folder' + data['folders'][f]['id'] + '" class="folder">' + data['folders'][f]['name'] + '</li>');
+						$ul.append('<li id="folder' + data['folders'][f]['id'] + '" class="folder"><a data-target="#" class="img-polaroid"><i class="icon-folder-close"></i> ' + data['folders'][f]['name'] + '</a></li>');
 					}					
 					for (var i = 0; i < data['images'].length; i++) {
 						$ul.append('<li id="image' + data['images'][i]['id'] + '" class="item"><img src="<?= base_url() ?>images/' + data['images'][i]['path'] + '" style="max-height: 50px; width: auto;" class="img-polaroid" /></li>');
@@ -158,7 +166,7 @@
 					method: 'POST',
 					dataType: 'json',
 					async: true,
-					data: {'table': <?= $table['id'] ?>, 'image': e.target.id.substr(5), 'x': $(e.target).offset().left, 'y': ($(e.target).offset().top)},
+					data: {'table': <?= $table['id'] ?>, 'image': e.target.id.substr(5), 'x': $(e.target).offset().left - $('#objects').offset().left, 'y': ($(e.target).offset().top - $('#objects').offset().top)},
 				});
 			}
 			$(e.target).fadeOut(function() {
@@ -188,7 +196,7 @@
 					method: 'POST',
 					dataType: 'json',
 					async: true,
-					data: {'id': id, 'x': $(e.target).offset().left, 'y': ($(e.target).offset().top)},
+					data: {'id': id, 'x': $(e.target).offset().left - $('#objects').offset().left, 'y': ($(e.target).offset().top - $('#objects').offset().top)},
 				});
 			}
 						
@@ -223,7 +231,6 @@
 			async: true,
 			data: {'id': <?= $table['id'] ?>, 'last_log_id': last_log_id},
 			success: function(data){
-        //Update your dashboard gauge
         for (var c = 0; c < data.length; c++)
         {
         	var action = data[c];

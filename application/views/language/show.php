@@ -30,7 +30,7 @@
 		<h4>Rides:</h4>
 		<ul class="nav nav-tabs nav-stacked">
 		<?php foreach ($rides as $ride): ?>
-			<li><?= anchor('/rides/show/' . $ride['id'], $ride['name']) ?></li>
+			<li><?= anchor('/rides/show/' . $ride['id'], ($ride['signoffs'] > 0 ? '<i class="icon-ok"></i> ' : '') . $ride['name']) ?></li>
 		<?php endforeach; ?>
 		</ul>		
 	</div>

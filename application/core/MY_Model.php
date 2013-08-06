@@ -9,12 +9,12 @@ class MY_Model extends CI_Model {
 			$language = $langList[0];
 		}
 		
-		$this->db->select('id');
+		$this->db->select('id, alias_for');
 		$languageQuery = $this->db->get_where('language', array('name' => $language));
 		if ($languageQuery->num_rows() > 0)
 		{
 			$languageRow = $languageQuery->row_array();
-			$languageId = $languageRow['id'];
+			$languageId = $languageRow['alias_for'] > 0 ? $languageRow['alias_for'] : $languageRow['id'];
 		}
 		elseif ($create)
 		{

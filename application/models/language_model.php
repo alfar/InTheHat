@@ -16,7 +16,7 @@ class Language_model extends CI_Model {
 			$this->db->limit($limit, $start);
 		}
 		
-		$this->db->select('id, name');
+		$this->db->select('case when alias_for > 0 then alias_for else id end as id, name', FALSE);
 		$this->db->order_by('name');
 		$query = $this->db->get('language');
 		if ($query->num_rows() > 0)
@@ -53,10 +53,22 @@ class Language_model extends CI_Model {
 		return $query->result_array();		
 	}
 	
-	public function get_rides($language)
+	public function get_rides($language, $user = FALSE)
 	{
 		$this->db->where('language', $language);
 		$this->db->select('ride.id, ride.name, ride.author, user.name AS userName, user.image as userImage');
+
+		if ($user !== FALSE)
+		{
+			$this->db->select('max(user_ride.score) as signoffs');
+			$this->db->join('user_ride', 'user_ride.ride = ride.id and user_ride.user = ' . $user, 'left');
+			$this->db->group_by('id, name, author, userName, userImage');
+		}
+		else
+		{
+			$this->db->select('0 as signoffs', FALSE);
+		}
+
 		$this->db->join('user', 'user.id = ride.author');
 		$query = $this->db->get('ride');
 		return $query->result_array();

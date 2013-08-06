@@ -1,10 +1,16 @@
 <h1><?= $path['name'] ?></h1>
+<style type="text/css">
+	#results .commands {
+		display: none;
+	}
+</style>
 
-<ul id="rides">
+<ul class="nav nav-tabs nav-stacked" id="rides">
 <?php foreach($rides as $ride): ?>
-	<li id="ride<?= $ride['id'] ?>" class="ride"><?= $ride['name'] ?> <span class="commands"><span class="remove">remove</span></span></li>
+
+	<li id="ride<?= $ride['id'] ?>" class="ride"><a data-target="#"><?= $ride['name'] ?> <span class="commands pull-right"><input type="button" class="remove btn btn-danger btn-small" value="Remove" /></span></a></li>
 <?php endforeach; ?>
-	<li id="ride0"></li>
+	<li id="ride0"><a data-target="#" class="muted disabled">End of path</a></li>
 </ul>
 
 <fieldset>
@@ -12,7 +18,7 @@
 <form class="form-search">
 <div class="input-append"><input type="text" id="search" class="search-query" /> <button id="search_button" class="btn">Search</button></div>
 </form>
-<ul id="results"></ul>
+<ul id="results" class="nav nav-tabs nav-stacked"></ul>
 </fieldset>
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery.drags.js"></script>
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery-ui-1.10.3.effects.min.js"></script>
@@ -61,7 +67,7 @@
 					var count = 0;
 					$.each(data, function(index, item) {
 						if ( $('#ride' + item['id']).length == 0 ) {
-							$('<li id="ride' + item['id'] + '" class="ride">' + item['name'] + ' <span class="commands"><span class="remove">remove</span></span></li>').appendTo($results);						
+							$('<li id="ride' + item['id'] + '" class="ride"><a data-target="#">' + item['name'] + ' <span class="commands pull-right"><input type="button" class="remove btn btn-danger btn-small" value="Remove" /></span></a></li>').appendTo($results);						
 							count++;
 						}
 					});

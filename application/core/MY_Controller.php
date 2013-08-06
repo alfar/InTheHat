@@ -24,6 +24,11 @@ class MY_Controller extends CI_Controller {
   	return $this->session->userdata('id') !== FALSE;
   }
   
+  public function user_id()
+  {
+  	return $this->session->userdata('id');
+  }
+  
   public function show_view($path)
   {
 		$this->load->view('templates/header', $this->view_data);

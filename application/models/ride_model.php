@@ -4,7 +4,7 @@ class Ride_model extends MY_Model {
 		$this->load->database();
 	}
 	
-	public function get($limit = FALSE, $start = 0, $language = FALSE)
+	public function get($limit = FALSE, $start = 0, $language = FALSE, $user = FALSE)
 	{
 		if ($language !== FALSE)
 		{
@@ -12,6 +12,16 @@ class Ride_model extends MY_Model {
 		}
 		$this->db->order_by('id', 'desc');
 		$this->db->select('ride.id, ride.name, language.id AS language_id, language.name AS language, ride.author, user.name AS userName, user.image as userImage');
+		if ($user !== FALSE)
+		{
+			$this->db->select('max(user_ride.score) as signoffs');
+			$this->db->join('user_ride', 'user_ride.ride = ride.id and user_ride.user = ' . $user, 'left');
+			$this->db->group_by('id, name, language_id, language, author, userName, userImage');
+		}
+		else
+		{
+			$this->db->select('0 as signoffs', FALSE);
+		}
 		$this->db->join('user', 'user.id = ride.author');
 		$this->db->join('language', 'language.id = ride.language');
 		if ($limit != FALSE)
@@ -136,11 +146,23 @@ class Ride_model extends MY_Model {
 		return $query->row_array();
 	}
 	
-	public function get_path_rides($path)
+	public function get_path_rides($path, $user = FALSE)
 	{
 		$this->db->select('path_ride.next_ride, ride.*');
 		$this->db->where('path_ride.path', $path);
 		$this->db->join('ride', 'ride.id = path_ride.ride');
+
+		if ($user !== FALSE)
+		{
+			$this->db->select('max(user_ride.score) as signoffs');
+			$this->db->join('user_ride', 'user_ride.ride = ride.id and user_ride.user = ' . $user, 'left');
+			$this->db->group_by('next_ride, id, name, language, author');
+		}
+		else
+		{
+			$this->db->select('0 as signoffs', FALSE);
+		}
+
 		$query = $this->db->get('path_ride');
 		$results = array();
 		$output = array();

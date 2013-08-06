@@ -40,7 +40,7 @@ class Languages extends MY_Controller
 		$this->view_data['offering'] = $this->language_model->get_language_users($id, 1);
 		$this->view_data['seeking'] = $this->language_model->get_language_users($id, 2);
 		$this->view_data['paths'] = $this->language_model->get_paths($id);
-		$this->view_data['rides'] = $this->language_model->get_rides($id);
+		$this->view_data['rides'] = $this->language_model->get_rides($id, $this->view_data['userid']);
 		
 		$this->show_view('language/show');
 	}

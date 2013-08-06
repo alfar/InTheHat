@@ -33,8 +33,6 @@
 	</fieldset>
 </form>
 <?= tiny_mce() ?>
-<?= flexbox('#offering_new', 'languages/flexbox', array('hiddenValue' => 'name', 'method' => 'GET', 'watermark' => 'Type to create new language', 'autoCompleteFirstMatch' => FALSE, 'selectFirstMatch' => TRUE, 'initialValue' => set_value('language', ''))) ?>
-<?= flexbox('#looking_for_new', 'languages/flexbox', array('hiddenValue' => 'name', 'method' => 'GET', 'watermark' => 'Type to create new language', 'autoCompleteFirstMatch' => FALSE, 'selectFirstMatch' => TRUE, 'initialValue' => set_value('language', ''))) ?>
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery-ui-1.10.3.effects.min.js"></script>
 <script type="text/javascript">
 	$(function() {

@@ -18,6 +18,22 @@
 		</ul>
 	</div>
 </div>
+<div class="row">
+	<div class="span6">		
+		<h2>Rides taken</h2>
+		<ul class="nav nav-tabs nav-stacked">
+		<?php foreach ($signoffs as $ride): ?>
+			<li><?= anchor('rides/show/' . $ride['id'], $ride['name'] . ' <span class="badge badge-info">' . $ride['language'] . '</span>') ?></li>
+		<?php endforeach; ?>
+		</ul>
+	</div>
+	<div class="span6">
+		<h2>Rides authored</h2>
+		<ul class="nav nav-tabs nav-stacked">
+		<?php foreach ($rides as $ride): ?>
+			<li><?= anchor('rides/show/' . $ride['id'], $ride['name'] . ' <span class="badge badge-info">' . $ride['language'] . '</span>') ?></li>
+		<?php endforeach; ?>
+		</ul>
 <?php
 /*<h2>Achievements:</h2>
 <ul class="itemlist">
@@ -27,3 +43,5 @@
 </ul>
 */
 ?>
+	</div>
+</div>

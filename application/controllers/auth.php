@@ -1,6 +1,6 @@
 <?php
 class Auth extends MY_Controller
-{
+{	
 	public function session($providername) 
 	{
 		$this->load->helper('url');

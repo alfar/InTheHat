@@ -169,4 +169,26 @@ class User_model extends MY_Model {
 		$this->db->where('id', $id);
 		$this->db->update('user', $data);
 	}
+
+	public function get_rides($id)
+	{
+		$this->db->select('ride.id, ride.name, language.id AS language_id, language.name AS language');
+		$this->db->where('ride.author', $id);
+		$this->db->join('language', 'language.id = ride.language');
+		$query = $this->db->get('ride');
+
+		return $query->result_array();
+	}
+	
+	public function get_signoffs($id)
+	{
+		$this->db->select('ride.id, ride.name, language.id AS language_id, language.name AS language, ride.author, user.name AS userName, user.image as userImage');
+		$this->db->where('user_ride.user', $id);
+		$this->db->join('user_ride', 'user_ride.ride = ride.id');
+		$this->db->join('language', 'language.id = ride.language');
+		$this->db->join('user', 'user.id = ride.author');
+		$query = $this->db->get('ride');
+		
+		return $query->result_array();
+	}	
 }

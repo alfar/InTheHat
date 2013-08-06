@@ -46,7 +46,7 @@ class Images extends MY_Controller
 		{
 			$config['upload_path'] = './images/';
 			$config['allowed_types'] = 'gif|jpg|png';
-			$config['max_size']	= '200';
+			$config['max_size']	= '300';
 			$config['max_width']  = '800';
 			$config['max_height']  = '600';
 

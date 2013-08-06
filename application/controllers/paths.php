@@ -25,7 +25,7 @@ class Paths extends MY_Controller
 	{
 		$path = $this->ride_model->get_path($id);		
 		$this->view_data['path'] = $path;
-		$this->view_data['rides'] = $this->ride_model->get_path_rides($id);
+		$this->view_data['rides'] = $this->ride_model->get_path_rides($id, $this->view_data['userid']);
 
 		if ($this->view_data['userid'] == $path['owner']) {
 			$this->view_data['submenu'] = array(
@@ -41,6 +41,7 @@ class Paths extends MY_Controller
 		$this->requires_login();
 		$this->load->helper('form');
 		$this->load->helper('tiny_mce');
+		$this->load->helper('select2');
 		$this->load->library('form_validation');
 
 		$this->view_data['css'] = array('css/select2.css');

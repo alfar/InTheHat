@@ -7,7 +7,7 @@
 		<p class="text-center"><a href="<?= site_url('/users/profile/{author}'); ?>"><img src="{userImage}" class="picture img-polaroid" /></a></p>
 		<p class="text-center"><small><a href="<?= site_url('/users/profile/{author}'); ?>">{userName}</a></small></p>
 	</div>
-	<p class="lead"><a href="<?= site_url('/rides/show/{id}') ?>">{name}</a></p>
+	<p class="lead"><a href="<?= site_url('/rides/show/{id}') ?>">{name}</a>{(data) => return data['signoffs'] > 0 ? ' <i class="icon-ok" style="vertical-align: middle"></i>' : '';}</p>
 	<p><?= anchor('/languages/show/{language_id}', '{language}', 'class="badge badge-info"') ?></p>
 </script>
 <script type="text/javascript">	
@@ -20,7 +20,7 @@
 			var item = data[i];
 			art = document.createElement('div');
 			art.className = 'well clearfix';
-			art.innerHTML = template.replace(/\{(.*?)\}/gi, function(ignore, m) { return item[m]; }) ;
+			art.innerHTML = template.replace(/\{\((.*?)\)\s*=>\s*(.*?)\}/gi, function(ignore, args, fun) { var f = new Function(args, fun); return f(item); }).replace(/\{(.*?)\}/gi, function(ignore, m) { return item[m]; }) ;
 			target.appendChild(art);
 		}
 		return data.length >= 10;

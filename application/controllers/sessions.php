@@ -160,7 +160,7 @@ class Sessions extends MY_Controller
 	{
 		$this->requires_login();
 		$this->load->helper('form');
-		$this->load->helper('tiny_mce');
+		$this->load->helper('select2');
 		$this->load->library('form_validation');
 		
 		$this->view_data['css'] = array('css/select2.css');

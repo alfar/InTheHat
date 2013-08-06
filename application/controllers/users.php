@@ -25,13 +25,15 @@ class Users extends MY_Controller
 	
 	public function profile($id)
 	{
-		$this->load->helper('tiny_mce');
 		$this->load->library('overachiever');
+		$this->load->helper('select2');
 
 		$this->view_data['user'] = $this->user_model->get_user($id);
 		$this->view_data['achievements'] = $this->overachiever->get_achievements($id);
 		$this->view_data['offering'] = $this->user_model->get_user_languages($id, 1);
 		$this->view_data['looking_for'] = $this->user_model->get_user_languages($id, 2);
+		$this->view_data['signoffs'] = $this->user_model->get_signoffs($id);
+		$this->view_data['rides'] = $this->user_model->get_rides($id);
 		
 		if ($this->view_data['userid'] == $id)
 		{
@@ -49,6 +51,7 @@ class Users extends MY_Controller
 		
 		$this->load->helper('form');
 		$this->load->helper('tiny_mce');
+		$this->load->helper('select2');
 		$this->load->library('form_validation');
 
 		$this->view_data['css'] = array('css/select2.css');
