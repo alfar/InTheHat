@@ -17,7 +17,7 @@ class Session_model extends MY_Model {
 		$this->db->insert('session_table', $data);				
 		$id = $this->db->insert_id();
 		
-		$this->feed($this->user_link($owner) . ' created a session in called ' . anchor('/sessions/show/' . $id, $name));
+		$this->feed($this->user_link($owner) . ' created a session in ' . $this->language_link($languageId) . ' called ' . anchor('/sessions/show/' . $id, $name));
 		
 		return $id;
 	}
@@ -72,8 +72,6 @@ class Session_model extends MY_Model {
 			
 			$this->db->insert('session_log', $data);
 		}
-
-		$this->feed($this->user_link($user) . ' visited a ' . anchor('/sessions/show/' . $table, 'session'));		
 	}
 	
 	public function take_seat($user, $table, $seat)

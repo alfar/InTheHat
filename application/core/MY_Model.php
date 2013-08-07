@@ -41,6 +41,26 @@ class MY_Model extends CI_Model {
 		
 		return anchor('/users/profile/' . $user['id'], $user['name']);
 	}
+
+	public function language_link($id)
+	{
+		$this->db->where('id', $id);
+		$query = $this->db->get('language');
+		
+		$language = $query->row_array();
+		
+		return anchor('/languages/show/' . $language['id'], $language['name']);
+	}
+
+	public function ride_link($id)
+	{
+		$this->db->where('id', $id);
+		$query = $this->db->get('ride');
+		
+		$ride = $query->row_array();
+		
+		return anchor('/rides/show/' . $ride['id'], $ride['name']);
+	}
 	
 	public function feed($action)
 	{

@@ -39,7 +39,7 @@ class Kaizen_model extends MY_Model {
 			'state' => 0
 		);
 				
-		$this->feed($this->user_link($author) . ' wrote a ' . anchor('/rides/kaizen/' . $ride, 'kaizen entry'));
+		$this->feed($this->user_link($author) . ' wrote a ' . anchor('/rides/kaizen/' . $ride, 'kaizen entry') . ' for the ride ' . $this->ride_link($ride));
 		
 		return $this->db->insert('kaizen', $data);
 	}
