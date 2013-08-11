@@ -9,7 +9,7 @@
 		<div id="feedlist">			
 		<div id="feedline"></div>
 			<article>
-				<div><?= anchor('/users/profile/' . $userid, 'You') ?> are here.</div>
+				<div><?= $userid ? anchor('/users/profile/' . $userid, 'You') : 'You' ?> are here.</div>
 			</article>
 			<?php foreach ($feed as $action): ?>
 			<article>

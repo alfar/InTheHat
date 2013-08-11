@@ -29,8 +29,16 @@ class MY_Controller extends CI_Controller {
   	return $this->session->userdata('id');
   }
   
-  public function show_view($path)
+  public function show_view($path, $data = FALSE)
   {
+  	if ($data !== FALSE)
+  	{
+  		foreach ($data as $key => $val)
+  		{
+  			$this->view_data[$key] = $val;
+  		}
+  	}
+  	
 		$this->load->view('templates/header', $this->view_data);
 		$this->load->view($path, $this->view_data);
 		$this->load->view('templates/footer', $this->view_data);		  	

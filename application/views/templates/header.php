@@ -43,13 +43,15 @@
 						</div>
 						
 					<?php else: ?>
-						<div class="nav-collapse collapse pull-right">
-							<ul class="nav">
-								<li><?= anchor('/auth/session/google', 'Google'); ?></li>
-								<li><?= anchor('/auth/session/facebook', 'Facebook'); ?></li>
-							</ul>
+						<div class="nav pull-right">
+								<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown">Login <b class="caret"></b></a>
+									<ul class="dropdown-menu">
+										<li><?= anchor('/auth/login', 'E-mail'); ?></li>
+										<li><?= anchor('/auth/session/google', 'Google'); ?></li>
+										<li><?= anchor('/auth/session/facebook', 'Facebook'); ?></li>
+									</ul>
+								</li>
 						</div>
-						<p class="navbar-text pull-right">Login using: </p>
 					<?php endif; ?>
 				</div>			
 			</div>

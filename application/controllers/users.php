@@ -54,21 +54,22 @@ class Users extends MY_Controller
 		$this->load->helper('select2');
 		$this->load->library('form_validation');
 
-		$this->view_data['css'] = array('css/select2.css');
-
-		$this->view_data['user'] = $this->user_model->get_user($this->view_data['userid']);
-		$this->view_data['offering'] = $this->user_model->get_user_languages($this->view_data['userid'], 1);
-		$this->view_data['looking_for'] = $this->user_model->get_user_languages($this->view_data['userid'], 2);
-		
-		$this->form_validation->set_rules('bio', 'Bio', 'required');
+		$this->form_validation->set_rules('name', 'Name', 'trim|xss_clean|required');
+		$this->form_validation->set_rules('bio', 'Bio', 'xss_clean|required');
 		
 		if ($this->form_validation->run() === FALSE)
 		{
+			$this->view_data['css'] = array('css/select2.css');
+	
+			$this->view_data['user'] = $this->user_model->get_user($this->view_data['userid']);
+			$this->view_data['offering'] = $this->user_model->get_user_languages($this->view_data['userid'], 1);
+			$this->view_data['looking_for'] = $this->user_model->get_user_languages($this->view_data['userid'], 2);
+			
 			$this->show_view('users/edit_profile');	
 		}
 		else
 		{			
-			$this->user_model->update_bio($this->view_data['userid'], $this->input->post('bio', TRUE));
+			$this->user_model->update_profile($this->view_data['userid'], $this->input->post('name', TRUE), $this->input->post('bio', TRUE));
 			$this->load->library('overachiever');
 			$this->overachiever->award_achievement(16);
 			redirect('/users/profile/' . $this->view_data['userid']);

@@ -39,14 +39,28 @@ class User_model extends MY_Model {
 	
 	public function get_userid($provider, $uid)
 	{
-		$this->db->select('id');
-		$query = $this->db->get_where('user', array('provider' => $provider, 'uid' => $uid));
+		$this->db->select('user_id');
+		$query = $this->db->get_where('user_login', array('provider' => $provider, 'uid' => $uid));
 		if ($query->num_rows() == 0)
 		{
 			return FALSE;
 		}
 		$row = $query->row_array();
-		return $row['id'];
+		return $row['user_id'];
+	}
+
+	public function get_login_user($provider, $uid)
+	{
+		$this->db->select('user.*');
+		$this->db->join('user', 'user.id = user_login.user_id');
+
+		$query = $this->db->get_where('user_login', array('provider' => $provider, 'uid' => $uid));
+		if ($query->num_rows() == 0)
+		{
+			return FALSE;
+		}
+
+		return $query->row_array();
 	}
 
 	public function update_user($provider, $uid, $name, $email, $image)
@@ -71,15 +85,22 @@ class User_model extends MY_Model {
 	public function create_user($provider, $uid, $name, $email, $image)
 	{		
 		$data = array(
-			'provider' => $provider,
-			'uid' => $uid,
 			'name' => $name,
 			'email' => $email,
 			'image' => $image
 		);
 		
 		$this->db->insert('user', $data);
-		return $this->db->insert_id();
+		$id = $this->db->insert_id();
+		
+		$data = array(
+			'provider' => $provider,
+			'uid' => $uid,
+			'user_id' => $id
+		);		
+		$this->db->insert('user_login', $data);
+		
+		$this->feed(anchor('/users/profile/' . $id, $name) . ' joined In The Hat! Welcome!');
 	}
 	
 	public function get_user($id)
@@ -110,7 +131,19 @@ class User_model extends MY_Model {
 		
 		$this->db->where('user', $user);
 		$this->db->where('type', $type);
-		return $this->db->count_all_results('user_languages');
+
+		$count = $this->db->count_all_results('user_languages');
+
+		if ($type == 1)
+		{
+			$this->feed($this->user_link($user) . ' no longer offers ' . $this->language_link($language));
+		}
+		else
+		{
+			$this->feed($this->user_link($user) . ' no longer seeks ' . $this->language_link($language));
+		}
+
+		return $count;
 	}
 
 	public function update_user_language($user, $language, $level, $type)
@@ -124,6 +157,15 @@ class User_model extends MY_Model {
 		);
 		
 		$this->db->update('user_languages', $data);
+
+		if ($type == 1)
+		{
+			$this->feed($this->user_link($user) . ' offers ' . $this->language_link($language) . ' at ' . $this->language_level_name($level) . ' level');
+		}
+		else
+		{
+			$this->feed($this->user_link($user) . ' seeks ' . $this->language_link($language) . ' at ' . $this->language_level_name($level) . ' level');
+		}
 	}
 
 	private function language_levels()
@@ -156,18 +198,29 @@ class User_model extends MY_Model {
 		);
 		
 		$this->db->insert('user_languages', $data);
+
+		if ($type == 1)
+		{
+			$this->feed($this->user_link($user) . ' offers ' . $this->language_link($languageId) . ' at ' . $this->language_level_name($level) . ' level');
+		}
+		else
+		{
+			$this->feed($this->user_link($user) . ' seeks ' . $this->language_link($languageId) . ' at ' . $this->language_level_name($level) . ' level');
+		}
 		
 		return array('language' => $languageId, 'name' => $language, 'level' => $level, 'levelname' => $this->language_level_name($level));
 	}
 	
-	public function update_bio($id, $bio)
+	public function update_profile($id, $name, $bio)
 	{
 		$data = array(
+			'name' => $name,
 			'bio' => $bio
 		);
 		
 		$this->db->where('id', $id);
 		$this->db->update('user', $data);
+		$this->feed($this->user_link($id) . ' updated their profile');
 	}
 
 	public function get_rides($id)
