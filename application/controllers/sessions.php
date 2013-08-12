@@ -26,12 +26,20 @@ class Sessions extends MY_Controller
 	{
 		$this->view_data['table'] = $this->session_model->get_table($table);
 
-		if ($this->logged_in())
+		if ($this->view_data['table']['closed'] == 1)
+		{
+			$this->view_data['mode'] = 'replay';
+		}
+		elseif ($this->logged_in())
 		{
 			$this->session_model->join_table($this->view_data['userid'], $table);
 			if ($this->view_data['userid'] == $this->view_data['table']['owner'])
 			{
 				$this->view_data['mode'] = 'owner';
+
+				$this->view_data['submenu'] = array(
+					'sessions/close/' . $table => 'End session'
+				);
 			}
 			else
 			{
@@ -54,6 +62,12 @@ class Sessions extends MY_Controller
 		$this->view_data['last_log_id'] = $this->session_model->get_last_log_id($table);
 		
 		$this->show_view('session/table', $this->view_data);
+	}
+	
+	public function close($table)
+	{
+		$this->session_model->close_session($table);
+		redirect('/sessions/show/' . $table);
 	}
 	
 	public function leave($table)

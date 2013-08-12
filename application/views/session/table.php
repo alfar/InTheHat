@@ -1,7 +1,7 @@
 <h1><?= $table['name'] ?></h1>
-
-<?php if ($mode != 'guest'): ?>
-<div class="btn-group">
+<?= $table['closed'] == 1 ? '<p class="muted">Replay</p>' : '' ?>
+<?php if ($mode != 'guest' && $mode != 'replay'): ?>
+<div id="bagcontainer" class="btn-group">
 	<button id="bag-toggle" class="pull-right btn dropdown-toggle" data-toggle="dropdown">Bag <span class="caret"></span>
 	</button>
 	<ul class="dropdown-menu">
@@ -21,7 +21,7 @@
 <div id="area">
 	<div class="row">
 		<div class="span1" id="trash" style="line-height: 60px; text-align: center;">
-<?php if ($mode != 'guest'): ?>
+<?php if ($mode != 'guest' && $mode != 'replay'): ?>
 			<i class="icon-trash"></i>
 <?php endif; ?>
 		</div>		
@@ -52,7 +52,7 @@
 	</div>
 	<div class="row">
 		<div class="span1" id="backslide" style="line-height: 60px; text-align: center;">
-<?php if ($mode != 'guest'): ?>
+<?php if ($mode != 'guest' && $mode != 'replay'): ?>
 			<i class="icon-picture"></i>
 <?php endif; ?>
 		</div>		
@@ -269,6 +269,9 @@
         			// new background
         			$('#table').css('background-image', 'url(<?= base_url() ?>images/' + action['path'] + ')');
         			break;
+        		case '9':
+        			alert('The initiator of this session has ended it.');     			
+        			location.reload(true);
         	}
         }
     }, dataType: "json", complete: poll, timeout: 30000 });

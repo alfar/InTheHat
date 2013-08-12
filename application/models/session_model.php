@@ -22,8 +22,30 @@ class Session_model extends MY_Model {
 		return $id;
 	}
 
-	public function get_tables($limit, $start)
+	public function close_session($id)
 	{
+		$this->db->where('id', $id);
+		$this->db->update('session_table', array('closed' => 1));
+		
+		$session = $this->get_table($id);
+
+		$data = array(
+			'objectId' => $session['owner'],
+			'tableId' => $id,
+			'action' => 9,
+		);
+		
+		$this->db->insert('session_log', $data);
+
+		$this->feed($this->user_link($session['ownerId']) . ' ended a session in ' . $this->language_link($session['language']) . ' called ' . anchor('sessions/show/' . $id, $session['name']));
+	}
+
+	public function get_tables($limit, $start, $closed = FALSE)
+	{
+		if ($closed == FALSE)
+		{
+			$this->db->where('session_table.closed', 0);
+		}
 		$this->db->order_by('session_table.id', 'desc');
 		$this->db->limit($limit, $start);
 		$this->db->join('user', 'user.id = session_table.owner');
