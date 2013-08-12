@@ -11,12 +11,17 @@ class User_model extends MY_Model {
 		return $query->result_array();
 	}
 
-	public function select($query = FALSE, $limit = FALSE, $start = FALSE)
+	public function select($query = FALSE, $exclude = FALSE, $limit = FALSE, $start = FALSE)
 	{
 		if ($query != FALSE)
 		{
 			$this->db->like('name', $query, 'after');
 		}
+		
+		if ($exclude != FALSE)
+		{
+			$this->db->where('id !=', $exclude);
+		}		
 		
 		if ($limit != FALSE)
 		{

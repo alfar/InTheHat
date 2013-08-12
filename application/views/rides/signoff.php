@@ -1,7 +1,7 @@
 <?= validation_errors(); ?>
 <?= form_open('rides/signoff/' . $ride['id']); ?>
 	<?= form_fieldset('Sign off on ride') ?>
-		<div><label for="user">User:</label><?= user_select2('user', set_value('user', '')) ?></div>
+		<div><label for="user">User:</label><?= user_select2('user', set_value('user', ''), 'input-block-level', TRUE) ?></div>
 		<div><label for="scorebuttons">Score:</label><input type="hidden" name="score" id="score" /><div id="scorebuttons" class="btn-group" data-toggle="buttons-radio">
 				<button type="button" class="btn btn-danger" data-value="1">Low</button>
 				<button type="button" class="btn btn-warning" data-value="2">Medium</button>
