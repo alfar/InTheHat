@@ -91,7 +91,7 @@
 		$('.seat2').appendTo($('#seat2 ul'));
 		$('.seat3').appendTo($('#seat3 ul'));
 		$('.seat4').appendTo($('#seat4 ul'));		
-	<?php if ($mode != 'guest'): ?>
+	<?php if ($mode != 'guest' && $mode != 'replay'): ?>
 		$('.seat').on('click', function (e) {
 			$.ajax({
 				url: '<?= site_url('/sessions/take_seat') ?>',
@@ -221,7 +221,9 @@
 			});
 		});
 <?php endif; ?>
+<?php if ($mode != 'replay'): ?>
 		poll();
+<?php endif; ?>
 	});
 
 	function poll() {
