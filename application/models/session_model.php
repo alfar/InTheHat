@@ -102,6 +102,14 @@ class Session_model extends MY_Model {
 			'userId' => $user,
 			'tableId' => $table
 		));
+		$row = $this->db->get('session_participant')->row_array();
+				
+		$oldseat = $row['seat'];
+		
+		$this->db->where(array(
+			'userId' => $user,
+			'tableId' => $table
+		));
 		$this->db->update('session_participant', array(
 			'seat' => $seat
 		));
@@ -110,6 +118,7 @@ class Session_model extends MY_Model {
 			'objectId' => $user,
 			'tableId' => $table,
 			'action' => 7,
+			'fromX' => $oldseat,
 			'toX' => $seat
 		);
 		
@@ -118,6 +127,9 @@ class Session_model extends MY_Model {
 	
 	public function leave_table($user, $table)
 	{
+		$this->db->where('userId', $user);
+		$seat = $this->get_participants($table);
+		
 		$this->db->where(array(
 			'userId' => $user,
 			'tableId' => $table
@@ -127,7 +139,8 @@ class Session_model extends MY_Model {
 		$data = array(
 			'objectId' => $user,
 			'tableId' => $table,
-			'action' => 6
+			'action' => 6,
+			'fromX' => $seat[0]['seat'],
 		);
 		
 		$this->db->insert('session_log', $data);
@@ -176,6 +189,19 @@ class Session_model extends MY_Model {
 		return $query->result_array();
 	}
 
+	public function get_replay($table)
+	{
+		$this->db->select('session_log.objectId, session_log.action, session_log.fromX, session_log.fromY, session_log.toX, session_log.toY, session_log.label, session_log.imageId, timestampdiff(SECOND, session_table.started, session_log.time ) as time, user.name, user.image as userImage, image.path');
+		$this->db->where('tableId', $table);
+		$this->db->join('session_table', 'session_table.id = session_log.tableId', 'left');
+		$this->db->join('user', 'user.id = session_log.objectid and session_log.action in (5, 6)', 'left');
+		$this->db->join('image', 'image.id = session_log.imageId', 'left');
+		$this->db->order_by('session_log.time, session_log.id');
+		$query = $this->db->get('session_log');
+				
+		return $query->result_array();		
+	}
+
 	public function create_object($table, $label, $x, $y, $image = 0)
 	{
 		$data = array(
@@ -200,7 +226,7 @@ class Session_model extends MY_Model {
 
 	public function destroy_object($id)
 	{
-		$this->db->query('insert into session_log (tableId, objectId, action) select tableId, id, 3 from session_object where id = ?', array($id));
+		$this->db->query('insert into session_log (tableId, objectId, action, fromX, fromY, imageId) select tableId, id, 3, x, y, image from session_object where id = ?', array($id));
 		$this->db->where('id', $id);
 		$this->db->delete('session_object');
 	}

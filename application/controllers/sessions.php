@@ -29,6 +29,7 @@ class Sessions extends MY_Controller
 		if ($this->view_data['table']['closed'] == 1)
 		{
 			$this->view_data['mode'] = 'replay';
+			$this->view_data['replay_data'] = $this->session_model->get_replay($table);
 		}
 		elseif ($this->logged_in())
 		{
@@ -57,7 +58,6 @@ class Sessions extends MY_Controller
 		$this->load->model('image_model');
 		$this->view_data['image_folders'] = $this->image_model->get_folders(0);
 		
-		$this->view_data['object_types'] = array(array('name' => 'Sten'), array('name' => 'Rød pen'), array('name' => 'Sort pen'), array('name' => 'Pind')); //)$this->session_model->get_object_types($table);
 		$this->view_data['players'] = $this->session_model->get_participants($table);
 		$this->view_data['last_log_id'] = $this->session_model->get_last_log_id($table);
 		

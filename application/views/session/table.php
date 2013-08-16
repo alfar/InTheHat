@@ -1,6 +1,28 @@
 <h1><?= $table['name'] ?></h1>
-<?= $table['closed'] == 1 ? '<p class="muted">Replay</p>' : '' ?>
-<?php if ($mode != 'guest' && $mode != 'replay'): ?>
+<?= $table['closed'] == 1 ? '<p><span class="muted">Replay</span> <span id="time" class="label">00:00:00</span></p>' : '' ?>
+<?php if ($mode == 'replay'): ?>
+<div class="row">
+	<div class="span9">
+		<div style="height: 16px;">
+			<div id="markers" style="position: relative;">			
+			</div>
+		</div>
+		<div class="progress" id="replay_bar">
+			<div class="bar" id="replay_position" style="width: 0%"></div>
+		</div>
+	</div>
+	<div class="span3">
+		<div class="btn-group pull-right">
+			<a data-target="#" class="btn btn-small" id="rewind-all"><i class="icon-fast-backward"></i></a>
+			<a data-target="#" class="btn btn-small" id="rewind"><i class="icon-backward"></i></a>
+			<a data-target="#" class="btn btn-small" id="play"><i class="icon-play"></i></a>
+			<a data-target="#" class="btn btn-small" id="stop"><i class="icon-stop"></i></a>
+			<a data-target="#" class="btn btn-small" id="forward"><i class="icon-forward"></i></a>
+			<a data-target="#" class="btn btn-small" id="forward-all"><i class="icon-fast-forward"></i></a>
+		</div>
+	</div>
+</div>
+<?php elseif ($mode != 'guest'): ?>
 <div id="bagcontainer" class="btn-group">
 	<button id="bag-toggle" class="pull-right btn dropdown-toggle" data-toggle="dropdown">Bag <span class="caret"></span>
 	</button>
@@ -39,7 +61,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="span10" id="table" style="height: 400px;<?= $table['background'] !== NULL ? 'background-image: url(' . base_url() .'images/' . $table['background'] . ')' : '' ?>">
+		<div class="span10" id="table" style="height: 400px;<?= ($mode != 'replay' && $table['background'] !== NULL) ? 'background-image: url(' . base_url() .'images/' . $table['background'] . ')' : '' ?>">
 		</div>
 		<div class="span1 seat vertical" id="seat3">
 			<div style="position: relative; top: 50%;">
@@ -68,16 +90,20 @@
 			<h1 class="muted">The stands</h1>
 		</div>
 		<ul class="inline">
+	<?php if ($mode != 'replay'): ?>
 	<?php foreach ($players as $player): ?>
 			<li id="player<?= $player['id'] ?>" class="player seat<?= $player['seat'] ?>"><img src="<?= $player['image'] ?>" alt="<?= $player['name'] ?>" title="<?= $player['name'] ?>" /></li>
 	<?php endforeach; ?>
+	<?php endif; ?>
 		</ul>
 	</div>
 </div>
 <div id="objects" style="position: relative;">
+<?php if ($mode != 'replay'): ?>
 <?php foreach ($objects as $obj): ?>
 	<div id="obj<?= $obj['id'] ?>" class="object" style="left: <?= $obj['x'] ?>px; top: <?= $obj['y'] ?>px;"><img src="<?= base_url() ?>images/<?= $obj['path'] ?>" /></div>
 <?php endforeach; ?>
+<?php endif; ?>
 </div>
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery.drags.js"></script>
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery-ui-1.10.3.effects.min.js"></script>
@@ -87,10 +113,12 @@
 	var bag_stack = [];
 	
 	$(function() {
+	<?php if ($mode != 'replay'): ?>
 		$('.seat1').appendTo($('#seat1 ul'));
 		$('.seat2').appendTo($('#seat2 ul'));
 		$('.seat3').appendTo($('#seat3 ul'));
 		$('.seat4').appendTo($('#seat4 ul'));		
+	<?php endif; ?>
 	<?php if ($mode != 'guest' && $mode != 'replay'): ?>
 		$('.seat').on('click', function (e) {
 			$.ajax({
@@ -223,8 +251,305 @@
 <?php endif; ?>
 <?php if ($mode != 'replay'): ?>
 		poll();
-<?php endif; ?>
 	});
+<?php else: ?>
+		load_session(<?= json_encode($replay_data, JSON_NUMERIC_CHECK) ?>);
+		$('#play').click(function() {
+			play_session(1);
+		});
+		$('#stop').click(function() {
+			play_session(0);
+		});
+		$('#rewind-all').click(function() {
+			play_session(0);
+			jump_session(0);
+		});
+		$('#rewind').click(function() {
+			play_session(-2);
+		});
+		$('#forward').click(function() {
+			play_session(2);
+		});
+		$('#forward-all').click(function() {
+			jump_session(session_length);
+		});
+		$('#replay_bar').click(function(e) {
+			jump_session(Math.ceil(e.offsetX / $(this).outerWidth() * session_length));
+		});
+	});
+
+	var current_speed = 0;
+	var current_interval = null;
+	var current_position = 0;
+	var current_index = 0;
+	var current_direction = 1;
+	var session_data = null;
+	var session_length = 0;
+		
+	function load_session(data)
+	{
+		session_data = data;
+		session_length = data[data.length -1].time;
+		for (var c = 0; c < data.length; c++)
+		{
+			$('#markers').append('<div style="position: absolute; left: ' + Math.ceil(data[c]['time'] / session_length * 100) + '%;"><i class="icon-hand-down" style="position: absolute; left: -8px;"></i></div>');
+		}
+	}
+	
+	function play_session(interval)
+	{
+		if (current_interval != null) {
+			clearInterval(current_interval);
+			current_interval = null;
+		}
+		if (interval != 0)
+		{
+			current_interval = setInterval(tick, 1000 / Math.abs(interval));
+			
+			if (interval > 0)
+			{
+				if (current_direction < 0)
+				{
+					current_index++;
+				}
+				current_direction = 1;
+			}
+			else
+			{
+				if (current_direction > 0)
+				{
+					current_index--;
+				}
+				current_direction = -1;
+			}
+		}
+		current_speed = interval;
+	}
+	
+	function jump_session(point)
+	{
+		if (point < current_position)
+		{
+			if (current_direction > 0)
+			{
+				current_index--;
+			}
+			current_direction = -1;
+		}
+		else
+		{
+			if (current_direction < 0)
+			{
+				current_index++;
+			}
+			current_direction = 1;
+		}
+		current_position = point;
+		update_table(true);
+		update_bar();
+		if (current_speed < 0)
+		{
+			current_direction = -1;
+		}
+		else if (current_speed > 0)
+		{
+			current_direction = 1;
+		}		
+	}
+	
+	function tick()
+	{
+		current_position += current_direction;
+		if (current_position < 0)
+		{
+			play_session(0);
+			current_position = 0;
+		}
+		
+		if (current_position >= session_length)
+		{
+			play_session(0);
+			current_position = session_length;
+		}
+		
+		update_table();
+		update_bar();
+	}
+	
+	function update_table(skip_animation)
+	{
+		var next_time = session_data[current_index]['time'];				
+		if ((current_direction > 0 && next_time <= current_position) || (current_direction < 0 && next_time >= current_position)) {
+			var playback = [];
+			if (current_direction > 0)
+			{
+				for (var c = current_index; c < session_data.length; c++)
+				{
+					if (session_data[c].time <= current_position)
+					{
+						playback.push(session_data[c]);
+						current_index = c + 1;
+					}
+					else
+					{
+						break;
+					}
+				}
+				handleEvent(playback, skip_animation);
+			}
+			else
+			{
+				for (var c = current_index; c >= 0; c--)
+				{
+					if (session_data[c].time >= current_position)
+					{
+						playback.push(session_data[c]);
+						current_index = c - 1;
+					}
+					else
+					{
+						break;
+					}
+				}
+				rollbackEvent(playback, skip_animation);
+			}
+		}
+	}
+	
+	var dateObjFormatter = function(ms) {
+      var date = new Date(ms);
+    
+      var hh = date.getUTCHours();
+      var mm = date.getMinutes();
+      var ss = date.getSeconds();
+      
+      if (hh < 10) {hh = '0' + hh}
+      if (mm < 10) {mm = '0' + mm}
+      if (ss < 10) {ss = '0' + ss}
+    
+      return hh + ':' + mm + ':' + ss;
+    };
+    	
+	function update_bar()
+	{
+		$('#replay_position').width(Math.ceil(current_position / session_length * 100) + '%');
+		$('#time').text(dateObjFormatter(current_position * 1000));
+	}
+<?php endif; ?>
+
+	function handleEvent(data, skip_animation)
+	{
+    for (var c = 0; c < data.length; c++)
+    {
+    	var action = data[c];
+    	last_log_id = action['id'];
+    	
+    	switch('' + action['action'])
+    	{
+    		case '1':
+    			$('#obj' + action['objectId']).animate({left: action['toX'] + 'px', top: action['toY'] + 'px'}).effect('highlight', {color: '#6f6'});
+    			break;
+    		case '2':
+    			$('#obj' + action['objectId']).effect('bounce').effect('highlight', {color: '#f66', queue: false});
+    			break;
+    		case '3':
+    			$('#obj' + action['objectId']).effect('highlight', {color: '#f66', queue: false}).fadeOut(function() { $(this).remove(); });
+    			break;
+    		case '4':
+    			$newObj = $('<div id="obj' + action['objectId'] + '" class="object" style="left: ' + action['toX'] + 'px; top: ' + action['toY'] + 'px;"><img src="<?= base_url() ?>images/' + action['path'] + '" /></div>');
+    			$('#objects').append($newObj);
+    			$newObj.fadeIn().effect('highlight', {color: '#6f6'})
+    			<?php if ($mode != 'replay'): ?>
+    			$newObj.drags({ 'within': '#area' });
+    			<?php endif; ?>
+    			break;
+    		case '5':
+    			// player joined
+    			$('<div id="player' + action['objectId'] + '" class="player seat0"><img src="' + action['userImage'] + '" alt="' + action['name'] + '" title="' + action['name'] + '" /></div>').appendTo('#seat0 ul').fadeIn();
+    			break;
+    		case '6':
+    			// player left
+    			$('#player' + action['objectId']).effect('highlight', {color: '#f66', queue: false}).fadeOut(function() { $(this).remove(); });
+    			break;
+    		case '7':
+    			// player sat
+    			$('#player' + action['objectId']).fadeOut(function () {$(this).appendTo('#seat' + action['toX'] + ' ul').fadeIn('bounce')});
+    			break;
+    		case '8':
+    			// new background
+    			$('#table').css('background-image', 'url(<?= base_url() ?>images/' + action['path'] + ')');
+    			break;
+    		case '9':
+    			alert('The initiator of this session has ended it.');     			
+    			<?php if ($mode != 'replay'): ?>
+    			location.reload(true);
+    			<?php endif; ?>
+    			break;
+    	}
+    	if (skip_animation) {
+    		$('*').finish();
+    	}
+    }
+	}
+
+	function rollbackEvent(data, skip_animation)
+	{
+    for (var c = 0; c < data.length; c++)
+    {
+    	var action = data[c];
+    	last_log_id = action['id'];
+    	
+    	switch('' + action['action'])
+    	{
+    		case '1':
+    			$('#obj' + action['objectId']).animate({left: action['fromX'] + 'px', top: action['fromY'] + 'px'}).effect('highlight', {color: '#6f6'});
+    			break;
+    		case '2':
+    			$('#obj' + action['objectId']).effect('bounce').effect('highlight', {color: '#f66', queue: false});
+    			break;
+    		case '3':
+    			$newObj = $('<div id="obj' + action['objectId'] + '" class="object" style="left: ' + action['fromX'] + 'px; top: ' + action['fromY'] + 'px;"><img src="<?= base_url() ?>images/' + action['path'] + '" /></div>');
+    			$('#objects').append($newObj);
+    			$newObj.fadeIn().effect('highlight', {color: '#6f6'})
+    			break;
+    		case '4':
+    			$('#obj' + action['objectId']).effect('highlight', {color: '#f66', queue: false}).fadeOut(function() { $(this).remove(); });
+    			break;
+    		case '5':
+    			// player joined
+    			$('#player' + action['objectId']).remove();
+    			break;
+    		case '6':
+    			// player left
+    			$('<div id="player' + action['objectId'] + '" class="player seat' + action['fromX'] + '"><img src="' + action['userImage'] + '" alt="' + action['name'] + '" title="' + action['name'] + '" /></div>').appendTo('#seat' + action['fromX'] + ' ul');
+    			break;
+    		case '7':
+    			// player sat
+    			$('#player' + action['objectId']).fadeOut(function () {$(this).appendTo('#seat' + action['fromX'] + ' ul').fadeIn('bounce')});
+    			break;
+    		case '8':
+    			// new background
+    			var found = false;
+    			for (var i = current_index; i >= 0; i--)
+    			{
+    				if (session_data[i]['action'] == 8)
+    				{
+    					$('#table').css('background-image', 'url(<?= base_url() ?>images/' + session_data[i]['path'] + ')');    					
+    					found = true;
+    					break;
+    				}
+    			}
+    			if (!found)
+    			{
+    					$('#table').css('background-image', 'none');
+    			}
+    			break;
+    	}
+    	if (skip_animation) {
+    		$('*').finish();
+    	}
+    }
+	}
 
 	function poll() {
 		$.ajax({ 
@@ -232,50 +557,7 @@
 			method: 'GET',
 			async: true,
 			data: {'id': <?= $table['id'] ?>, 'last_log_id': last_log_id},
-			success: function(data){
-        for (var c = 0; c < data.length; c++)
-        {
-        	var action = data[c];
-        	last_log_id = action['id'];
-        	
-        	switch(action['action'])
-        	{
-        		case '1':
-        			$('#obj' + action['objectId']).animate({left: action['toX'] + 'px', top: action['toY'] + 'px'}).effect('highlight', {color: '#6f6'});
-        			break;
-        		case '2':
-        			$('#obj' + action['objectId']).effect('bounce').effect('highlight', {color: '#f66', queue: false});
-        			break;
-        		case '3':
-        			$('#obj' + action['objectId']).effect('highlight', {color: '#f66', queue: false}).fadeOut(function() { $(this).remove(); });
-        			break;
-        		case '4':
-        			$newObj = $('<div id="obj' + action['objectId'] + '" class="object" style="left: ' + action['toX'] + 'px; top: ' + action['toY'] + 'px;"><img src="<?= base_url() ?>images/' + action['path'] + '" /></div>');
-        			$('body').append($newObj);
-        			$newObj.fadeIn().effect('highlight', {color: '#6f6'})
-        			$newObj.drags({ 'within': '#area' });
-        			break;
-        		case '5':
-        			// player joined
-        			$('<div id="player' + action['objectId'] + '" class="player seat0"><img src="' + action['image'] + '" alt="' + action['name'] + '" title="' + action['name'] + '" /></div>').appendTo('#seat0').fadeIn();
-        			break;
-        		case '6':
-        			// player left
-        			$('#player' + action['objectId']).effect('highlight', {color: '#f66', queue: false}).fadeOut(function() { $(this).remove(); });
-        			break;
-        		case '7':
-        			// player sat
-        			$('#player' + action['objectId']).fadeOut(function () {$(this).appendTo('#seat' + action['toX'] + ' ul').fadeIn('bounce')});
-        			break;
-        		case '8':
-        			// new background
-        			$('#table').css('background-image', 'url(<?= base_url() ?>images/' + action['path'] + ')');
-        			break;
-        		case '9':
-        			alert('The initiator of this session has ended it.');     			
-        			location.reload(true);
-        	}
-        }
-    }, dataType: "json", complete: poll, timeout: 30000 });
+			success: handleEvent, 
+			dataType: "json", complete: poll, timeout: 30000 });
   }
 </script>
