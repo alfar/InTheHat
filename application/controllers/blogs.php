@@ -71,7 +71,7 @@ class Blogs extends MY_Controller
 		{
 			$this->blog_model->create_blog($this->input->post('title'), $this->input->post('text'), $this->session->userdata('id'));
 			$this->load->library('overachiever');
-			$this->overachiever->track_counter(6);
+			$this->overachiever->track_counter('Blog posts');
 			redirect('/');
 		}		
 	}

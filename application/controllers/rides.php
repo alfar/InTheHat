@@ -110,7 +110,7 @@ class Rides extends MY_Controller
 		{
 			$id = $this->ride_model->create_ride($this->input->post('name'), $this->input->post('description'), $this->input->post('language'), $this->session->userdata('id'));
 			$this->load->library('overachiever');
-			$this->overachiever->track_counter(5);
+			$this->overachiever->track_counter('Rides created');
 			redirect('/rides/show/' . $id);
 		}
 	}

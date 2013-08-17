@@ -27,14 +27,34 @@ class Users extends MY_Controller
 
 		$this->output->set_content_type('application/json')->set_output(json_encode(array('more' => count($result) == 10, 'results' => $result)));
 	}
+
+	private function tabs($id, $active)
+	{
+		$this->view_data['tabs'] = array(
+				array('url' => 'users/profile/' . $id, 'text' => 'Profile', 'active' => $active == 'profile'),
+				array('url' => 'users/stats/' . $id, 'text' => 'Stats', 'active' => $active == 'stats'),
+		);
+	}
+		
+	public function stats($id)
+	{
+		$this->load->model('counter_model');
+		$this->tabs($id, 'stats');
+		
+		$this->view_data['user'] = $this->user_model->get_user($id);
+		$this->view_data['counters'] = $this->counter_model->get_counters($id);
+		$this->view_data['badges'] = $this->counter_model->get_badges($id);
+
+		$this->show_view('users/stats');
+	}
 	
 	public function profile($id)
 	{
 		$this->load->library('overachiever');
 		$this->load->helper('select2');
+		$this->tabs($id, 'profile');
 
 		$this->view_data['user'] = $this->user_model->get_user($id);
-		$this->view_data['achievements'] = $this->overachiever->get_achievements($id);
 		$this->view_data['offering'] = $this->user_model->get_user_languages($id, 1);
 		$this->view_data['looking_for'] = $this->user_model->get_user_languages($id, 2);
 		$this->view_data['signoffs'] = $this->user_model->get_signoffs($id);
@@ -76,7 +96,7 @@ class Users extends MY_Controller
 		{			
 			$this->user_model->update_profile($this->view_data['userid'], $this->input->post('name', TRUE), $this->input->post('bio', TRUE));
 			$this->load->library('overachiever');
-			$this->overachiever->award_achievement(16);
+			$this->overachiever->award_achievement('Updated profile');
 			redirect('/users/profile/' . $this->view_data['userid']);
 		}
 	}
@@ -88,7 +108,14 @@ class Users extends MY_Controller
 		$type = $this->input->post('type', TRUE);
 		
 		$this->load->library('overachiever');
-		$this->overachiever->award_achievement(16 + $type);
+		if ($type == 1)
+		{
+			$this->overachiever->award_achievement('Offering language');
+		} 
+		else
+		{
+			$this->overachiever->award_achievement('Requesting language');
+		}
 		$this->output->set_content_type('application/json')->set_output(json_encode($this->user_model->add_user_language($this->view_data['userid'], $language, $level, $type)));					
 	}
 	
@@ -109,8 +136,15 @@ class Users extends MY_Controller
 		
 		if ($this->user_model->remove_user_language($this->view_data['userid'], $language, $type) == 0)
 		{
-		$this->load->library('overachiever');
-			$this->overachiever->unaward_achievement(16 + $type);
+			$this->load->library('overachiever');
+			if ($type == 1)
+			{
+				$this->overachiever->unaward_achievement('Offering language');
+			} 
+			else
+			{
+				$this->overachiever->unaward_achievement('Requesting language');
+			}
 		}
 		
 		$this->output->set_content_type('application/json')->set_output('true');					
