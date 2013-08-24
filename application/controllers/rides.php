@@ -176,6 +176,9 @@ class Rides extends MY_Controller
 			else
 			{
 				$this->ride_model->signoff($id, $this->input->post('user', TRUE), $this->view_data['userid'], $this->input->post('score', TRUE), $this->input->post('comment', TRUE));
+				$this->load->library('overachiever');
+				$this->overachiever->track_counter('Sign offs made');
+				$this->overachiever->track_counter('Rides completed', $this->input->post('user', TRUE));
 				redirect('/rides/signoffs/' . $id);
 			}		
 		}
@@ -205,6 +208,8 @@ class Rides extends MY_Controller
 	public function kaizen($id)
 	{
 		$this->load->helper('select2');
+		$this->load->helper('form');
+		$this->load->helper('comments');
 		$this->load->model('kaizen_model');
 
 		$this->view_data['css'] = array('css/select2.css');
@@ -247,6 +252,8 @@ class Rides extends MY_Controller
 		{
 			$this->load->model('kaizen_model');
 			$this->kaizen_model->create_kaizen($ride, $this->input->post('comment'), $this->session->userdata('id'));
+			$this->load->library('overachiever');
+			$this->overachiever->track_counter('Kaizen posted');
 			redirect('/rides/kaizen/' . $ride);
 		}		
 	}
@@ -257,7 +264,33 @@ class Rides extends MY_Controller
 		$state = $this->input->post('state', TRUE);
 		
 		$this->load->model('kaizen_model');
-		$this->kaizen_model->update_kaizen($id, $state);
+		$old_state = $this->kaizen_model->update_kaizen($id, $state);
 		
+		if ('' . $old_state != $state)
+		{		
+			if ($old_state == 2)
+			{
+					$this->load->library('overachiever');
+					$this->overachiever->track_counter('Kaizen accepted');			
+			}
+			elseif ($old_state == 3)
+			{
+					$this->load->library('overachiever');
+					$this->overachiever->track_counter('Kaizen rejected');			
+			}
+
+			if ($state == '2')
+			{
+					$this->load->library('overachiever');
+					$this->overachiever->track_counter('Kaizen accepted');			
+			}
+			elseif ($state == '3')
+			{
+					$this->load->library('overachiever');
+					$this->overachiever->track_counter('Kaizen rejected');			
+			}
+		}
+				
 		$this->output->set_content_type('application/json')->set_output('true');					
-	}}
+	}
+}

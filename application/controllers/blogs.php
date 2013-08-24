@@ -6,6 +6,7 @@ class Blogs extends MY_Controller
 		parent::__construct();
 		$this->load->model('blog_model');
 		$this->load->helper("url");
+		$this->load->helper("form");
 		$this->view_data['nav'] = 'blogs';
 	}
 
@@ -32,6 +33,8 @@ class Blogs extends MY_Controller
 		$this->view_data['blog'] = $this->blog_model->get_blog($id);
 
 		$this->view_data['title'] = $this->view_data['blog']['title'];
+		
+		$this->load->helper('comments_helper');
 	
 		$this->load->view('templates/header', $this->view_data);
 		$this->load->view('blog/view', $this->view_data);

@@ -4,7 +4,7 @@
 		<h2>Statistics:</h2>
 		<table class="table">
 			<?php foreach ($counters as $counter): ?>
-				<tr><td><?= $counter['name'] ?></td><td><?= $counter['value'] ?></td></tr>			
+				<tr><td><?= anchor('counters/show/' . $counter['id'], $counter['name']) ?></td><td><?= $counter['value'] ?></td></tr>			
 			<?php endforeach; ?>
 		</table>
 	</div>

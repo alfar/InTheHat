@@ -46,7 +46,10 @@ class Kaizen_model extends MY_Model {
 	
 	public function update_kaizen($id, $state)
 	{
+		$kaizen = $this->get_kaizen($id);
 		$this->db->where('id', $id);
 		$this->db->update('kaizen', array('state' => $state));
+		
+		return $kaizen['state'];
 	}
 }

@@ -24,6 +24,7 @@
 							<li<?= ($nav == 'paths' ? ' class="active"' : '') ?>><?= anchor('/paths/index', 'Paths'); ?></li>
 							<li<?= ($nav == 'sessions' ? ' class="active"' : '') ?>><?= anchor('/sessions', 'Sessions') ?></li>
 							<?php if ($userid !== FALSE) : ?>
+							<li<?= ($nav == 'badges' ? ' class="active"' : '') ?>><?= anchor('/badges', 'Badges') ?></li>
 							<li<?= ($nav == 'images' ? ' class="active"' : '') ?>><?= anchor('/images/index', 'Images'); ?></li>
 							<?php endif; ?>
 	          </ul>

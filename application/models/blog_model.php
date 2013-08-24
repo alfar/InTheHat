@@ -11,9 +11,12 @@ class Blog_model extends MY_Model {
 	
 	public function get_blogs($limit, $start)
 	{
+		$this->db->select('blog.*, user.name, user.image, count(comment.id) as comments');
 		$this->db->order_by('posted', 'desc');
 		$this->db->limit($limit, $start);
 		$this->db->join('user', 'user.id = blog.author');
+		$this->db->join('comment', 'comment.object_id = blog.id and `comment`.`type` = 1', 'left');
+		$this->db->group_by('blog.id, blog.title, blog.text, blog.author, blog.posted, user.name, user.image');
 		$query = $this->db->get('blog');
 		return $query->result_array();
 	}

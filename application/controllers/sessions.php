@@ -190,6 +190,8 @@ class Sessions extends MY_Controller
 		else
 		{
 			$table = $this->session_model->create_table($this->input->post('name', TRUE), $this->view_data['userid'], $this->input->post('language', TRUE));
+			$this->load->library('overachiever');
+			$this->overachiever->track_counter('Sessions created');
 			
 			redirect('sessions/show/' . $table);
 		}		

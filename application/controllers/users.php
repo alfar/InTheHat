@@ -108,14 +108,14 @@ class Users extends MY_Controller
 		$type = $this->input->post('type', TRUE);
 		
 		$this->load->library('overachiever');
-		if ($type == 1)
-		{
-			$this->overachiever->award_achievement('Offering language');
-		} 
-		else
-		{
-			$this->overachiever->award_achievement('Requesting language');
-		}
+			if ($type == 1)
+			{
+				$this->overachiever->award_achievement('An offer you can\'t refuse');
+			} 
+			else
+			{
+				$this->overachiever->award_achievement('Looking for language');
+			}
 		$this->output->set_content_type('application/json')->set_output(json_encode($this->user_model->add_user_language($this->view_data['userid'], $language, $level, $type)));					
 	}
 	
@@ -139,11 +139,11 @@ class Users extends MY_Controller
 			$this->load->library('overachiever');
 			if ($type == 1)
 			{
-				$this->overachiever->unaward_achievement('Offering language');
+				$this->overachiever->unaward_achievement('An offer you can\'t refuse');
 			} 
 			else
 			{
-				$this->overachiever->unaward_achievement('Requesting language');
+				$this->overachiever->unaward_achievement('Looking for language');
 			}
 		}
 		

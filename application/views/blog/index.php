@@ -7,9 +7,9 @@
 	<p class="text-center"><a href="<?= site_url('/users/profile/{author}'); ?>">{name}</a></p>
 	<p class="text-center muted"><small>{posted}</small></p>
 </div>
-<h2><?= anchor('/blogs/view/{slug}', '{title}') ?></h2>
+<h2><?= anchor('/blogs/view/{id}', '{title}') ?></h2>
 <div id="main">{text}</div>
-
+<?= anchor('/blogs/view/{id}', '{comments} comments') ?>
 </script>
 <script type="text/javascript">	
 	var blog_next_page = 0;
