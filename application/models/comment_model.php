@@ -44,6 +44,23 @@ class Comment_model extends MY_Model {
 		);
 		
 		$this->db->insert('comment', $data);
+
+		if ($type == 1)
+		{
+			$this->db->select('blog.title');
+			$this->db->where('id', $id);
+			$blog = $this->db->get('blog')->row_array();
+			$this->feed($this->user_link($author) . ' commented on a blog entry titled ' . anchor('/blogs/view/' . $id, $blog['title']));
+		}
+		elseif ($type == 2)
+		{
+			$this->db->select('kaizen.ride, ride.name');
+			$this->db->join('ride', 'ride.id = kaizen.ride');
+			$this->db->where('kaizen.id', $id);
+			$kaizen = $this->db->get('kaizen')->row_array();
+			
+			$this->feed($this->user_link($author) . ' commented on a kaizen entry for the ride ' . anchor('/rides/kaizen/' . $kaizen['ride'], $kaizen['name']));			
+		}
 		
 		$id = $this->db->insert_id();
 

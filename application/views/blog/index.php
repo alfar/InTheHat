@@ -9,7 +9,7 @@
 </div>
 <h2><?= anchor('/blogs/view/{id}', '{title}') ?></h2>
 <div id="main">{text}</div>
-<?= anchor('/blogs/view/{id}', '{comments} comments') ?>
+<?= anchor('/blogs/view/{id}', '{comments} comment{comment_s}') ?>
 </script>
 <script type="text/javascript">	
 	var blog_next_page = 0;

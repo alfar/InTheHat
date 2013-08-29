@@ -1,6 +1,8 @@
 var comments_loaded = {};
 
 $(function() {
+	$('.comment-textarea').autosize();
+	
 	$('.comments').each(function(c, com) {		
 		var type = $(this).data('type');
 		var object_id = $(this).data('object-id');

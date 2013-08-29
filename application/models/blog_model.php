@@ -11,7 +11,7 @@ class Blog_model extends MY_Model {
 	
 	public function get_blogs($limit, $start)
 	{
-		$this->db->select('blog.*, user.name, user.image, count(comment.id) as comments');
+		$this->db->select('blog.*, user.name, user.image, count(comment.id) as comments, case when count(comment.id) = 1 then \'\' else \'s\' end as comment_s', FALSE);
 		$this->db->order_by('posted', 'desc');
 		$this->db->limit($limit, $start);
 		$this->db->join('user', 'user.id = blog.author');

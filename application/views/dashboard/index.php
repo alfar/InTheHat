@@ -1,5 +1,5 @@
 <div class="hero-unit">
-	<div class="pull-left" style="margin: 20px;"><img src="<?= base_url() ?>images/tophat.png" alt="This is where everything should go - in the hat!" /></div>
+	<div class="pull-left" style="margin-right: 20px;"><img src="<?= base_url() ?>images/inthehat.png" alt="This is where everything should go - in the hat!" /></div>
 	<h1>In the hat</h1>
 	<p>Online language hunting tools and resources</p>
 </div>
