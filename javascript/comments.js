@@ -33,7 +33,7 @@ $(function() {
 		e.stopPropagation();
 		e.preventDefault();
 		var post = $(this).closest('form').find(':input').serialize()
-		$(this).closest('form').find('input[name="text"]').val('');
+		$(this).closest('form').find('textarea').val('');
 		$.ajax({
 			url: site_url + '/comments/create', 
 			method: 'POST',
@@ -42,7 +42,7 @@ $(function() {
 			success: $.proxy(populateNewComments, $('#' + $(this).data('target'))), 
 			dataType: "json"			
 		});
-		$(this).closest('form').find('input[name="text"]').focus();
+		$(this).closest('form').find('textarea').focus();
 	});
 });
 
@@ -70,7 +70,7 @@ function populateNewComments(data)
 			latestid = data[c]['id'];
 		}
 
-		$(this).prepend('<div class="comment"><div class="muted"><small>' + data[c]['authorName'] + ' - ' + data[c]['posted'] + '</small></div><p>' + data[c]['text'] + '</p></div>');		
+		$(this).prepend('<div class="comment"><div class="muted"><small>' + data[c]['authorName'] + ' - ' + data[c]['posted'] + '</small></div><p>' + data[c]['text'].replace(/\r?\n/g,'<br />') + '</p></div>');		
 	}
 	latest.val(latestid);
 }
@@ -97,7 +97,7 @@ function populateComments(data)
 		{
 			latestid = data.comments[c]['id'];
 		}
-		$(this).append('<div class="comment"><div class="muted"><small>' + data.comments[c]['authorName'] + ' - ' + data.comments[c]['posted'] + '</small></div><p>' + data.comments[c]['text'] + '</p></div>');		
+		$(this).append('<div class="comment"><div class="muted"><small>' + data.comments[c]['authorName'] + ' - ' + data.comments[c]['posted'] + '</small></div><p>' + data.comments[c]['text'].replace(/\r?\n/g,'<br />') + '</p></div>');		
 	}
 	latest.val(latestid);
 	
