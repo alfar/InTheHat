@@ -25,6 +25,7 @@
 							<li<?= ($nav == 'sessions' ? ' class="active"' : '') ?>><?= anchor('/sessions', 'Sessions') ?></li>
 							<?php if ($userid !== FALSE) : ?>
 							<li<?= ($nav == 'badges' ? ' class="active"' : '') ?>><?= anchor('/badges', 'Badges') ?></li>
+							<li<?= ($nav == 'kaizen' ? ' class="active"' : '') ?>><?= anchor('/kaizen/incoming', 'Kaizen' . ($kaizen_count > 0 ? ' <span class="badge badge-info">' . $kaizen_count . '</span>' : '')) ?></li>
 							<li<?= ($nav == 'images' ? ' class="active"' : '') ?>><?= anchor('/images/index', 'Images'); ?></li>
 							<?php endif; ?>
 	          </ul>

@@ -271,12 +271,12 @@ class Rides extends MY_Controller
 			if ($old_state == 2)
 			{
 					$this->load->library('overachiever');
-					$this->overachiever->track_counter('Kaizen accepted');			
+					$this->overachiever->untrack_counter('Kaizen accepted');			
 			}
 			elseif ($old_state == 3)
 			{
 					$this->load->library('overachiever');
-					$this->overachiever->track_counter('Kaizen rejected');			
+					$this->overachiever->untrack_counter('Kaizen rejected');			
 			}
 
 			if ($state == '2')

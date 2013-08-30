@@ -11,6 +11,17 @@ class Overachiever {
 		$id = $CI->counter_model->get_counter_id($name);
 		return $CI->counter_model->track($id, $user);
 	}
+
+	public function untrack_counter($name, $user = FALSE) {		
+		$CI =& get_instance();
+		if ($user == FALSE)
+		{
+			$user = $CI->view_data['userid'];
+		}
+		$CI->load->model('counter_model');
+		$id = $CI->counter_model->get_counter_id($name);
+		return $CI->counter_model->untrack($id, $user);
+	}
 	
 	public function award_achievement($name, $user = FALSE) {
 		$CI =& get_instance();

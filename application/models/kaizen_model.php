@@ -8,16 +8,37 @@ class Kaizen_model extends MY_Model {
 	{
 		$this->db->select('kaizen.id, kaizen.comment, kaizen.state, kaizen.author, user.name as author_name, user.image as author_image');
 		$this->db->where('ride', $ride);
+		$this->db->order_by('kaizen.state', 'asc');
 		$this->db->order_by('kaizen.id', 'desc');
 		$this->db->join('user', 'user.id = kaizen.author');
 		$query = $this->db->get('kaizen');
 		return $query->result_array();
 	}
 	
-	public function get_kaizen_for_user($user)
+	public function count_new_for_user($user)
+	{
+		$this->db->where('ride.author', $user);
+		$this->db->where('kaizen.state', 0);
+		$this->db->join('ride', 'ride.id = kaizen.ride');
+		return $this->db->count_all_results('kaizen');
+	}
+	
+	public function get_kaizen_from_user($user)
 	{
 		$this->db->select('kaizen.id, kaizen.comment, kaizen.state, kaizen.ride, ride.name as ride_name');
 		$this->db->where('kaizen.author', $user);
+		$this->db->order_by('kaizen.state', 'asc');
+		$this->db->order_by('kaizen.id', 'desc');
+		$this->db->join('ride', 'ride.id = kaizen.ride');
+		$query = $this->db->get('kaizen');
+		return $query->result_array();
+	}
+
+	public function get_kaizen_for_user($user)
+	{
+		$this->db->select('kaizen.id, kaizen.comment, kaizen.state, kaizen.ride, ride.name as ride_name');
+		$this->db->where('ride.author', $user);
+		$this->db->order_by('kaizen.state', 'asc');
 		$this->db->order_by('kaizen.id', 'desc');
 		$this->db->join('ride', 'ride.id = kaizen.ride');
 		$query = $this->db->get('kaizen');

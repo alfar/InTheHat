@@ -44,6 +44,36 @@ class Counter_model extends MY_Model {
 			$this->feed($this->user_link($user) . ' was awarded the badge ' . anchor('/badges/show/' . $badge['id'], $badge['name']));			
 		}
 	}
+
+	public function untrack($counter, $user, $points = 1)
+	{
+		$key = array(
+			'counter_id' => $counter,
+			'user_id' => $user
+		);
+		$this->db->where($key);
+		
+		$track = $this->db->get('user_counters');
+		$row = $track->row_array();
+		$value = $row['value'];
+		$new_value = $value - $points;
+
+		$this->db->where($key);
+		$this->db->set('value', $new_value);
+		$this->db->update('user_counters');
+		
+		$this->db->where('counter_id', $counter);		
+		$this->db->where('threshold >', $new_value);
+		
+		$this->db->join('user_badges', 'user_badges.badge_id = badge.id and user_badges.user_id = ' . $user);
+		
+		$badges = $this->db->get('badge');
+		foreach ($badges->result_array() as $badge)
+		{
+			$this->db->delete('user_badges', array('badge_id' => $badge['id'], 'user_id' => $user));
+			$this->feed($this->user_link($user) . ' had the badge ' . anchor('/badges/show/' . $badge['id'], $badge['name']) . ' taken');			
+		}
+	}
 	
 	public function get_counter_id($name)
 	{

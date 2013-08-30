@@ -8,6 +8,8 @@ class MY_Controller extends CI_Controller {
   {
 		parent::__construct();
 		$this->view_data['userid'] = $this->session->userdata('id');
+		$this->load->model('kaizen_model');
+		$this->view_data['kaizen_count'] = $this->kaizen_model->count_new_for_user($this->view_data['userid']);
   }
   
   public function requires_login()
