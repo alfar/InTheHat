@@ -19,7 +19,7 @@
 	      	<a href="<?= site_url('/') ?>" class="brand">In The Hat!</a>
 	        <div class="nav-collapse collapse">
 	          <ul class="nav">
-							<li<?= ($nav == 'blogs' ? ' class="active"' : '') ?>><?= anchor('/blogs', 'Blogs') ?></li>	
+							<li<?= ($nav == 'blogs' ? ' class="active"' : '') ?>><?= anchor('/blogs', 'Blog') ?></li>	
 							<li<?= ($nav == 'rides' ? ' class="active"' : '') ?>><?= anchor('/rides/index', 'Rides') ?></li>	
 							<li<?= ($nav == 'paths' ? ' class="active"' : '') ?>><?= anchor('/paths/index', 'Paths'); ?></li>
 							<li<?= ($nav == 'sessions' ? ' class="active"' : '') ?>><?= anchor('/sessions', 'Sessions') ?></li>

@@ -19,7 +19,7 @@ class Blogs extends MY_Controller
 		if ($this->logged_in())
 		{
 			$this->view_data['submenu'] = array(
-				'/blogs/create' => 'New blog',
+				'/blogs/create' => 'New post',
 			);
 		}
 		

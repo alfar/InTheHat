@@ -135,10 +135,12 @@ class Counter_model extends MY_Model {
 	}
 	
 	public function award($badge, $user)
-	{		
-		$this->db->insert('user_badges', array('user_id' => $user, 'badge_id' => $badge));
-		
-		$this->feed($this->user_link($user) . ' was awarded the badge ' . anchor('/badges/show/' . $badge, $this->get_badge_name($badge)));			
+	{
+		if (!$this->has_badge($badge, $user)) {
+			$this->db->insert('user_badges', array('user_id' => $user, 'badge_id' => $badge));
+			
+			$this->feed($this->user_link($user) . ' was awarded the badge ' . anchor('/badges/show/' . $badge, $this->get_badge_name($badge)));			
+		}
 	}
 
 	public function unaward($badge, $user)
@@ -156,6 +158,12 @@ class Counter_model extends MY_Model {
 				
 		return $query->result_array();
 	}
+
+  public function has_badge($badge_id, $user_id)
+  {
+		$this->db->where(array('badge_id' => $badge_id, 'user_id' => $user_id));
+		return $this->db->count_all_results('user_badges') > 0;
+  }
 
 	public function get_all_badges($user)
 	{

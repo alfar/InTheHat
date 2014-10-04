@@ -1,3 +1,4 @@
+<h1>Community blog</h1>
 <div id="blog_content" class="container"></div>
 
 <script type="text/javascript" src="<?= base_url() ?>javascript/jquery.simple-infinite-scroll.min.js"></script>

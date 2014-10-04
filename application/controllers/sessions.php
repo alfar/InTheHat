@@ -142,21 +142,9 @@ class Sessions extends MY_Controller
 		$last_log_id = $this->input->get('last_log_id', TRUE);
 
 		$result = FALSE;
-		$repeats = 20;
+		$repeats = 1;
 		
-		while ($repeats > 0)
-		{
-			$repeats--;
-			$result = $this->session_model->get_rolling_log($table, $last_log_id);
-			if ($result == FALSE)
-			{
-				usleep(1000000);
-			}
-			else
-			{
-				$repeats = 0;
-			}
-		}		
+		$result = $this->session_model->get_rolling_log($table, $last_log_id);
 		
 		$this->output->set_content_type('application/json')->set_output(json_encode($result));					
 	}

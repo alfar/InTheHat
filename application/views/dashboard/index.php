@@ -1,7 +1,9 @@
 <div class="hero-unit">
 	<div class="pull-left" style="margin-right: 20px;"><img src="<?= base_url() ?>images/inthehat.png" alt="This is where everything should go - in the hat!" /></div>
 	<h1>In the hat</h1>
-	<p>Online language hunting tools and resources</p>
+	<p>This web site is the answer to all your language game questions - including "Where are your keys?"</p>
+	<p>Here, you can blog about your language gaming experience, keep track of the excellent rides and setups you've played - and get feedback from other players.</p>			
+	<p>You can also use the session tables to facilitate an online game, sharing a virtual set of objects to talk about and move around on the virtual table.</p>			
 </div>
 <div class="row">
 	<div class="span8">
@@ -20,6 +22,17 @@
 		</div>
 	</div>
 	<div class="span4">
+		<h1>Latest rides</h1>
+		<div class="well clearfix">
+			<ul class="unstyled">
+			<?php foreach ($rides as $ride): ?>			
+				<li style="padding: 5px;"><?= anchor('/rides/show/' . $ride['id'], $ride['name']) ?> <?= anchor('/languages/show/' . $ride['language_id'], $ride['language'], 'class="badge badge-info"') ?></li>
+			<?php endforeach; ?>
+			<?php if ($userid !== FALSE): ?>
+				<li style="padding: 5px;"><?= anchor('/rides/create', 'Add your own ride', 'class="btn btn-success btn-large"') ?></li>
+			<?php endif; ?>
+			</ul>
+		</div>		
 		<h1>Random User</h1>
 		<div class="well clearfix">
 			<div class="clearfix">				

@@ -70,7 +70,7 @@ function populateNewComments(data)
 			latestid = data[c]['id'];
 		}
 
-		$(this).prepend('<div class="comment"><div class="muted"><small>' + data[c]['authorName'] + ' - ' + data[c]['posted'] + '</small></div><p>' + data[c]['text'].replace(/\r?\n/g,'<br />') + '</p></div>');		
+		$(this).append('<div class="comment"><div class="muted"><small>' + data[c]['authorName'] + ' - ' + data[c]['posted'] + '</small></div><p>' + data[c]['text'].replace(/\r?\n/g,'<br />') + '</p></div>');		
 	}
 	latest.val(latestid);
 }
@@ -97,7 +97,7 @@ function populateComments(data)
 		{
 			latestid = data.comments[c]['id'];
 		}
-		$(this).append('<div class="comment"><div class="muted"><small>' + data.comments[c]['authorName'] + ' - ' + data.comments[c]['posted'] + '</small></div><p>' + data.comments[c]['text'].replace(/\r?\n/g,'<br />') + '</p></div>');		
+		$(this).prepend('<div class="comment"><div class="muted"><small>' + data.comments[c]['authorName'] + ' - ' + data.comments[c]['posted'] + '</small></div><p>' + data.comments[c]['text'].replace(/\r?\n/g,'<br />') + '</p></div>');		
 	}
 	latest.val(latestid);
 	

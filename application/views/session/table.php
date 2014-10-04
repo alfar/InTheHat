@@ -552,12 +552,14 @@
 	}
 
 	function poll() {
-		$.ajax({ 
-			url: "<?= site_url('/sessions/rolling_log') ?>", 
-			method: 'GET',
-			async: true,
-			data: {'id': <?= $table['id'] ?>, 'last_log_id': last_log_id},
-			success: handleEvent, 
-			dataType: "json", complete: poll, timeout: 30000 });
+		setTimeout(function() {
+			$.ajax({ 
+				url: "<?= site_url('/sessions/rolling_log') ?>", 
+				method: 'GET',
+				async: true,
+				data: {'id': <?= $table['id'] ?>, 'last_log_id': last_log_id},
+				success: handleEvent, 
+				dataType: "json", complete: poll, timeout: 30000 });
+			}, 10000);
   }
 </script>
